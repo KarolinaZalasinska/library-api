@@ -17,7 +17,8 @@ public class Copy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(unique = true)
     private Integer copyNumber;
 
     @NotNull(message = "Data zakupu jest wymagana.")

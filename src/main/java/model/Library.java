@@ -28,8 +28,8 @@ public class Library {
     private String address;
 
     @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Nieprawidłowy format kodu pocztowego.")
-    @Column(nullable = false)
-    private String postalCode;
+    @Column(nullable = false, length = 6)
+    private char postalCode;
 
     @ManyToMany(mappedBy = "libraries")
     private Set<Book> books = new HashSet<>();
