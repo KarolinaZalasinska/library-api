@@ -1,10 +1,9 @@
-CREATE TABLE loan (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    date_of_borrow DATE NOT NULL,
-    planned_return_date DATE NOT NULL,
-    book_id BIGINT,
-    user_id BIGINT,
-    FOREIGN KEY (book_id) REFERENCES book (id),
-    FOREIGN KEY (user_id) REFERENCES user (id)
-
+CREATE TABLE Loan (
+                      id INT AUTO_INCREMENT PRIMARY KEY,
+                      dateOfBorrow DATE NOT NULL,
+                      plannedReturnDate DATE NOT NULL,
+                      book_id INT NOT NULL,
+                      user_id INT NOT NULL,
+                      FOREIGN KEY (book_id) REFERENCES Book(id),
+                      FOREIGN KEY (user_id) REFERENCES User(id)
 );

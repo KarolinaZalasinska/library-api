@@ -1,13 +1,17 @@
-CREATE TABLE category (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL
+CREATE TABLE Category (
+                          id INT AUTO_INCREMENT PRIMARY KEY,
+                          name VARCHAR(255) NOT NULL
 );
 
--- Relacja wiele do wielu z książkami (tabela pośrednia book_category)
-CREATE TABLE book_category (
-                               book_id BIGINT NOT NULL,
-                               category_id BIGINT NOT NULL,
+CREATE TABLE Book (
+                      id INT AUTO_INCREMENT PRIMARY KEY,
+                      title VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Book_Category (
+                               book_id INT,
+                               category_id INT,
                                PRIMARY KEY (book_id, category_id),
-                               FOREIGN KEY (book_id) REFERENCES book (id),
-                               FOREIGN KEY (category_id) REFERENCES category (id)
+                               FOREIGN KEY (book_id) REFERENCES Book(id),
+                               FOREIGN KEY (category_id) REFERENCES Category(id)
 );

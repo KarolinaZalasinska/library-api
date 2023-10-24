@@ -29,7 +29,7 @@ public class Publisher {
 
     @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Nieprawidłowy format kodu pocztowego.")
     @Column(nullable = false)
-    private String postalCode;
+    private char postalCode;
 
     @OneToMany(mappedBy = "publisher")
     private Set<Book> books = new HashSet<>();

@@ -1,6 +1,6 @@
 CREATE TABLE user
 (
-    id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id         INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(255) NOT NULL,
     last_name  VARCHAR(255) NOT NULL,
     email      VARCHAR(50)  NOT NULL UNIQUE,
@@ -11,12 +11,12 @@ CREATE TABLE user
 
 CREATE INDEX index_user_email ON user (email);
 
-CREATE TABLE loan (
-                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Loan (
+                      id INT AUTO_INCREMENT PRIMARY KEY,
                       date_of_borrow DATE NOT NULL,
                       planned_return_date DATE NOT NULL,
-                      book_id BIGINT NOT NULL,
-                      user_id BIGINT NOT NULL,
-                      FOREIGN KEY (book_id) REFERENCES book (id),
-                      FOREIGN KEY (user_id) REFERENCES user (id)
+                      book_id INT NOT NULL,
+                      user_id INT NOT NULL,
+                      FOREIGN KEY (book_id) REFERENCES Book(id),
+                      FOREIGN KEY (user_id) REFERENCES User(id)
 );

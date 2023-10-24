@@ -1,15 +1,11 @@
-CREATE TABLE review
-(
-    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    rating      INTEGER   NOT NULL,
-    description TEXT(50)  NOT NULL,
-    created_at  TIMESTAMP NOT NULL,
-    updated_at  TIMESTAMP,
-    book_id     BIGINT    NOT NULL,
-    user_id     BIGINT    NOT NULL
+CREATE TABLE Review (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        rating INT NOT NULL,
+                        description TEXT(50) NOT NULL,
+                        created_at TIMESTAMP NOT NULL,
+                        updated_at TIMESTAMP,
+                        book_id INT NOT NULL,
+                        user_id INT NOT NULL,
+                        FOREIGN KEY (book_id) REFERENCES Book(id),
+                        FOREIGN KEY (user_id) REFERENCES User(id)
 );
-
-ALTER TABLE review
-    ADD CONSTRAINT fk_review_book FOREIGN KEY (book_id) REFERENCES book (id);
-ALTER TABLE review
-    ADD CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES user (id);
