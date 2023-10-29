@@ -55,4 +55,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Loan> loans = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<UserActivity> userActivities;
+
 }

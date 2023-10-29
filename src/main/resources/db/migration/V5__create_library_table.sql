@@ -1,6 +1,6 @@
 CREATE TABLE Library
 (
-    id         INT AUTO_INCREMENT PRIMARY KEY,
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
     address    VARCHAR(255) NOT NULL,
     postal_code CHAR(6)      NOT NULL,

@@ -1,5 +1,5 @@
 CREATE TABLE Copy (
-                      id INT AUTO_INCREMENT PRIMARY KEY,
+                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                       copy_number INT NOT NULL,
                       purchase_date DATE NOT NULL,
                       book_id INT NOT NULL,

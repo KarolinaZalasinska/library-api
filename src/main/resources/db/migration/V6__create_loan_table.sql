@@ -1,5 +1,5 @@
 CREATE TABLE Loan (
-                      id INT AUTO_INCREMENT PRIMARY KEY,
+                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                       dateOfBorrow DATE NOT NULL,
                       plannedReturnDate DATE NOT NULL,
                       book_id INT NOT NULL,

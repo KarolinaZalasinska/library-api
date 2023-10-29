@@ -1,5 +1,5 @@
 CREATE TABLE Review (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         rating INT NOT NULL,
                         description TEXT(50) NOT NULL,
                         created_at TIMESTAMP NOT NULL,

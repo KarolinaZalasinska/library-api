@@ -10,4 +10,7 @@ public interface EntityMapper<DTO, Entity> {
     List<Entity> toEntityList(List<DTO> dtos);
     List<DTO> toDTOList(List<Entity> entities);
 
+    // Generyczna metoda do aktualizacji danych istniejącej encji z DTO
+    void updateEntityFromDto(DTO dto, Entity entity);
+
 }
