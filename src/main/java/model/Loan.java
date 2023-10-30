@@ -37,5 +37,4 @@ public class Loan {
     @ManyToOne
     @JoinColumn(name = "copy_id") // określamy pole klucza obcego do encji Copy
     private Copy copy; // To pole reprezentuje związek między Loan a Copy
-
 }

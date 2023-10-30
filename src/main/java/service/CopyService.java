@@ -17,31 +17,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 @RequiredArgsConstructor
 public class CopyService {
-    public final CopyRepository repository;
-    public final CopyMapper mapper;
+    public final CopyRepository copyRepository;
     public final LoanRepository loanRepository;
     public final UserRepository userRepository;
     public final LateFeeRepository lateFeeRepository;
     public final UserActivityRepository userActivityRepository;
+    public final CopyMapper mapper;
 
     @Transactional
     public CopyDto createCopy(final CopyDto copyDto) {
         Copy copy = mapper.toEntity(copyDto);
-        Copy savedCopy = repository.save(copy);
+        Copy savedCopy = copyRepository.save(copy);
         return mapper.toDto(savedCopy);
     }
 
     public CopyDto getCopyById(final Long id) {
-        Optional<Copy> optionalCopy = repository.findById(id);
+        Optional<Copy> optionalCopy = copyRepository.findById(id);
         return optionalCopy.map(mapper::toDto)
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The copy with the given ID could not be found.", id));
     }
 
     public List<CopyDto> getAllCopies() {
-        List<Copy> copies = repository.findAll();
+        List<Copy> copies = copyRepository.findAll();
         if (copies.isEmpty()) {
             return Collections.emptyList();
         } else {
@@ -53,23 +55,23 @@ public class CopyService {
 
     @Transactional
     public CopyDto updateCopy(final Long id, CopyDto copyDto) {
-        return repository.findById(id)
+        return copyRepository.findById(id)
                 .map(copy -> {
                     mapper.updateEntityFromDto(copyDto, copy);
-                    Copy updatedCopy = repository.save(copy);
+                    Copy updatedCopy = copyRepository.save(copy);
                     return mapper.toDto(updatedCopy);
                 }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Failed to update the copy with the given ID.", id));
     }
 
     @Transactional
     public void deleteCopy(final Long id) {
-        repository.deleteById(id);
+        copyRepository.deleteById(id);
     }
 
     @Transactional
     public void borrowCopy(final Long copyId, final Long userId) {
         // Pobierz kopię z repozytorium
-        Copy copy = repository.findById(copyId)
+        Copy copy = copyRepository.findById(copyId)
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Egzemplarz o podanym ID nie został odnaleziony.", copyId));
 
         // Upewnij się, że kopia jest dostępna do wypożyczenia
@@ -95,7 +97,7 @@ public class CopyService {
 
         // Zaktualizuj pole borrowedDate w obiekcie Copy
         copy.setBorrowedDate(currentDate);
-        repository.save(copy);
+        copyRepository.save(copy);
 
         // Utwórz nowy obiekt UserActivity i zapisz go w UserActivityRepository
         UserActivity userActivity = new UserActivity();
@@ -106,10 +108,9 @@ public class CopyService {
         userActivityRepository.save(userActivity);
     }
 
-
     @Transactional
     public void returnCopy(final Long id, final Long userId) {
-        Copy copy = repository.findById(id)
+        Copy copy = copyRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The copy with the specified ID could not be found.", id));
 
         if (copy.getBorrowedDate() == null || copy.getExpectedReturnDate() != null) {
@@ -143,7 +144,7 @@ public class CopyService {
         loanRepository.save(loan);
 
         copy.setExpectedReturnDate(returnDate);
-        repository.save(copy);
+        copyRepository.save(copy);
 
         // Utwórz nowy obiekt UserActivity i zapisz go w UserActivityRepository
         User user = userRepository.findById(userId)
@@ -159,50 +160,48 @@ public class CopyService {
 
 
     public List<CopyDto> getCopiesForBook(final Long bookId) {
-        List<Copy> copies = repository.findByBookId(bookId);
+        List<Copy> copies = copyRepository.findByBookId(bookId);
         return copies.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public List<CopyDto> getAvailableCopiesForBook(final Long bookId) {
-        List<Copy> copies = repository.findAvailableCopiesForBook(bookId, LocalDate.now());
+        List<Copy> copies = copyRepository.findAvailableCopiesForBook(bookId, LocalDate.now());
         return copies.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public boolean isCopyAvailable(final Long copyId) {
-        Optional<Copy> optionalCopy = repository.findById(copyId);
-        if (optionalCopy.isPresent()) {
-            Copy copy = optionalCopy.get();
-            // Pobieramy Loan powiązany z egzemplarzem Copy
-            Loan loan = copy.get
-
-            // Sprawdzamy, czy istnieje Loan i czy istnieją daty wypożyczenia i planowanego zwrotu
-            if (loan != null && loan.getDateOfBorrow() != null && loan.getPlannedReturnDate() != null) {
-                LocalDate dateOfBorrow = loan.getDateOfBorrow();
-                LocalDate plannedReturnDate = loan.getPlannedReturnDate();
-                LocalDate now = LocalDate.now();
-
-                // Sprawdzamy, czy egzemplarz jest dostępny
-                if (dateOfBorrow.isAfter(now) || plannedReturnDate.isBefore(now)) {
-                    return false;
-                }
-            }
+    public boolean isCopyAvailable(final Long id) {
+        Optional<Copy> optionalCopy = copyRepository.findById(id);
+        if (optionalCopy.isEmpty()) {
+            return false;
         }
-        return true;
+
+        Copy copy = optionalCopy.get();
+
+        if (copy.getBorrowedDate() == null) {
+            return true;
+        } else if (copy.getReturnDate() == null) {
+            return false;
+        } else {
+            LocalDate currentDate = LocalDate.now();
+            LocalDate returnDate = copy.getReturnDate();
+
+            return returnDate.isBefore(currentDate);
+        }
     }
 
     public List<CopyDto> getBorrowedCopiesForUser(final Long userId) {
-        List<Copy> copies = repository.findBorrowedCopiesForUser(userId);
+        List<Copy> copies = copyRepository.findBorrowedCopiesForUser(userId);
         return copies.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public List<CopyDto> getOverdueCopies() {
-        List<Copy> copies = repository.findOverdueCopies(LocalDate.now());
+        List<Copy> copies = copyRepository.findOverdueCopies(LocalDate.now());
         return copies.stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());

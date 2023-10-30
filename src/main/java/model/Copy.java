@@ -37,6 +37,8 @@ public class Copy {
 
     private LocalDate borrowedDate;
 
+    private LocalDate returnDate;
+
     @OneToMany(mappedBy = "copy")
     private List<Loan> loans = new ArrayList<>();
 
@@ -45,7 +47,4 @@ public class Copy {
 
     @ManyToOne
     private Book book;
-
-
-
 }
