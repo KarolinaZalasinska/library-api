@@ -2,6 +2,7 @@ package model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class LateFee {
 
     @ManyToOne
     @JoinColumn(name = "loan_id")
-    private Loan loan;
+    private Borrow loan;
 
     private LocalDate date;
 

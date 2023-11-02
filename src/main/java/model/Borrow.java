@@ -1,21 +1,20 @@
 package model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Loan {
+public class Borrow {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,6 +24,9 @@ public class Loan {
 
     @Column
     private LocalDate returnDate;
+
+    @Column
+   private LocalDate expectedReturnDate;
 
     @ManyToOne
     @JoinColumn(name = "book_id")
@@ -37,4 +39,5 @@ public class Loan {
     @ManyToOne
     @JoinColumn(name = "copy_id") // określamy pole klucza obcego do encji Copy
     private Copy copy; // To pole reprezentuje związek między Loan a Copy
+
 }

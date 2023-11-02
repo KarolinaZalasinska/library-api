@@ -24,7 +24,7 @@ public class UserDto {
     @NotBlank(message = "Email jest wymagany.")
     private String email;
 
-    private List<LoanDto> loans; // Zostawić ?????????????? Jeżeli tak, to:
+    private List<BorrowDto> loans; // Zostawić ?????????????? Jeżeli tak, to:
     // Decyzja o tym, czy w klasie DTO użytkownika (UserDto) powinno znajdować się pole loans, czyli lista wypożyczeń,
     // zależy od potrzeb Twojej aplikacji i sposobu, w jaki jest ona projektowana.
     //

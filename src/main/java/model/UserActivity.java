@@ -2,6 +2,7 @@ package model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,9 +13,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserActivity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String bookTitle;
+    private String actionType;
+    private LocalDate actionDate;
+    private LocalDate borrowDate;
+    private LocalDate returnDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -24,7 +32,4 @@ public class UserActivity {
     @JoinColumn(name = "copy_id")
     private Copy copy;
 
-    private LocalDate borrowDate;
-    private LocalDate returnDate;
-    private String action;
 }

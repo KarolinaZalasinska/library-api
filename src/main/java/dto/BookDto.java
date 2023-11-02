@@ -6,9 +6,6 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import model.Availability;
-import model.Copy;
-import model.Loan;
-import model.Publisher;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +31,7 @@ public class BookDto {
     private Availability availability;
 
     private List<CopyDto> copies;
-    private List<LoanDto> loans;
+    private List<BorrowDto> loans;
     private PublisherDto publisher;
     private Set<AuthorDto> authors;
     private Set<CategoryDto> bookCategories;

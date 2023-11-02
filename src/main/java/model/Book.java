@@ -60,7 +60,7 @@ public class Book {
     private List<Copy> copies = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
-    private List<Loan> loans = new ArrayList<>();
+    private List<Borrow> loans = new ArrayList<>();
 
     // Relacja wiele do jednego z wydawnictwem
     @ManyToOne

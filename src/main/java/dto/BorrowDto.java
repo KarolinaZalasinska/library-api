@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoanDto {
+public class BorrowDto {
     private Long id;
     private LocalDate dateOfBorrow;
     private LocalDate plannedReturnDate;

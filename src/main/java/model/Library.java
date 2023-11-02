@@ -29,8 +29,13 @@ public class Library {
 
     @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Nieprawidłowy format kodu pocztowego.")
     @Column(nullable = false, length = 6)
-    private char postalCode;
+    private String postalCode;
 
     @ManyToMany(mappedBy = "libraries")
     private Set<Book> books = new HashSet<>();
+
+    public void addBook(Book book) {
+        this.books.add(book);
+        book.getLibraries().add(this);
+    }
 }
