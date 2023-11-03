@@ -63,17 +63,9 @@ public class BorrowService {
         }
 
         Copy copy = optionalCopy.get();
+        LocalDate currentDate = LocalDate.now();
 
-        if (copy.getBorrowedDate() == null) {
-            return true;
-        } else if (copy.getReturnDate() == null) {
-            return false;
-        } else {
-            LocalDate currentDate = LocalDate.now();
-            LocalDate returnDate = copy.getReturnDate();
-
-            return returnDate.isBefore(currentDate);
-        }
+        return copy.getReturnDate() == null || copy.getReturnDate().isBefore(currentDate);
     }
 
     @Transactional

@@ -1,10 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -17,11 +14,10 @@ public class LateFee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "loan_id")
-    private Borrow loan;
-
     private LocalDate date;
-
     private double amount;
+
+    @ManyToOne
+    @JoinColumn(name = "borrow_id")
+    private Borrow borrow;
 }

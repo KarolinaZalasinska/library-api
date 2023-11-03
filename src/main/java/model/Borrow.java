@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,7 +27,10 @@ public class Borrow {
     private LocalDate returnDate;
 
     @Column
-   private LocalDate expectedReturnDate;
+    private LocalDate expectedReturnDate;
+
+    @OneToMany(mappedBy = "borrow")
+    private List<LateFee> lateFees;
 
     @ManyToOne
     @JoinColumn(name = "book_id")
