@@ -45,7 +45,7 @@ public class Book {
     private String isbn;
 
     @Enumerated(EnumType.STRING)
-    private Availability availability;
+    private CopyStatus availability;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import repository.*;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -18,7 +17,6 @@ public class BorrowService {
     public final CopyRepository copyRepository;
     public final UserRepository userRepository;
     public final UserActivityRepository userActivityRepository;
-    public final LateFeeRepository lateFeeRepository;
 
     @Transactional
     public void borrowCopy(Long copyId, Long userId) {
@@ -37,9 +35,11 @@ public class BorrowService {
         Borrow borrow = createBorrowRecord(copy, user, currentDate);
         copy.setBorrowedDate(currentDate);
         updateCopyAndSave(copy, borrow);
+        updateCopyStatus(copy, CopyStatus.BORROWED);
         logUserActivity(user, copy, "borrow", currentDate, null);
 
     }
+
 
     private Borrow createBorrowRecord(Copy copy, User user, LocalDate currentDate) {
         LocalDate expectedReturnDate = currentDate.plusDays(30);
@@ -83,24 +83,11 @@ public class BorrowService {
         borrow.setUser(user);
         borrow.setDateOfBorrow(currentDate);
 
-        handleLateReturn(borrow, currentDate);
         updateBorrowAndCopy(borrow, copy, currentDate);
+        updateCopyStatus(copy, CopyStatus.AVAILABLE);
         logUserActivity(user, copy, "return", borrow.getDateOfBorrow(), currentDate);
     }
 
-    private void handleLateReturn(Borrow borrow, LocalDate returnDate) {
-        if (returnDate.isAfter(borrow.getExpectedReturnDate())) {
-            long daysLate = ChronoUnit.DAYS.between(borrow.getExpectedReturnDate(), returnDate);
-            double lateFeePerDay = 5.0;
-            double lateFee = daysLate * lateFeePerDay;
-
-            LateFee lateFeeRecord = new LateFee();
-            lateFeeRecord.setLoan(borrow);
-            lateFeeRecord.setAmount(lateFee);
-            lateFeeRecord.setDate(returnDate);
-            lateFeeRepository.save(lateFeeRecord);
-        }
-    }
 
     private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDate returnDate) {
         borrow.setReturnDate(returnDate);
@@ -121,6 +108,9 @@ public class BorrowService {
         }
         userActivityRepository.save(userActivity);
     }
-
+    public void updateCopyStatus(Copy copy, CopyStatus newStatus) {
+        copy.setStatus(newStatus);
+        copyRepository.save(copy);
+    }
 
 }

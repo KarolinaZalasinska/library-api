@@ -20,6 +20,5 @@ public class ReviewDto {
     private String description;
 
     private Long bookId;
-
     private Long userId;
 }

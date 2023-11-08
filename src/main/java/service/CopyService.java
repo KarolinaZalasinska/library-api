@@ -89,5 +89,4 @@ public class CopyService {
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
-
 }

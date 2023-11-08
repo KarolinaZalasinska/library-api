@@ -1,5 +1,6 @@
 package repository;
 
+import model.Borrow;
 import model.LateFee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,7 @@ public interface LateFeeRepository extends JpaRepository<LateFee, Long> {
 
     // Metoda do pobrania opłat za spóźnienie z określonej daty
     List<LateFee> findAllByDate(LocalDate date);
+
+    // wszystkie opłaty za spóźnienie związane z danym wypożyczeniem
+    List<LateFee> findLateFeesByBorrow(Borrow borrow);
 }

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import model.Availability;
+import model.CopyStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +28,7 @@ public class BookDto {
     @Pattern(regexp = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$", message = "Nieprawidłowy numer ISBN.")
     private String isbn;
 
-    private Availability availability;
+    private CopyStatus availability;
 
     private List<CopyDto> copies;
     private List<BorrowDto> loans;

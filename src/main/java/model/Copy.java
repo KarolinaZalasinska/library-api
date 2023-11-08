@@ -46,4 +46,6 @@ public class Copy {
 
     @ManyToOne
     private Book book;
+
+    public void setStatus(CopyStatus newStatus) {}
 }
