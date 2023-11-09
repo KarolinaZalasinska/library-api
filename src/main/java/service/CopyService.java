@@ -1,7 +1,7 @@
 package service;
 
 import dto.CopyDto;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
 import mapper.CopyMapper;
 import model.*;
@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import repository.*;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

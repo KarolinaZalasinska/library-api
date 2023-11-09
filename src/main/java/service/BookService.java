@@ -1,7 +1,7 @@
 package service;
 
 import dto.BookDto;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
 import mapper.BookMapper;
 import model.Book;
@@ -29,8 +29,9 @@ public class BookService {
 
     public BookDto getBookById(final Long id) {
         Optional<Book> optionalBook = repository.findById(id);
-        return optionalBook.map(mapper::toDto).orElseThrow(() -> new BookNotFoundException(id));
+        return optionalBook.map(mapper::toDto).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book with the given ID was not found.", id));
     }
+
     public List<BookDto> getAllBooks() {
         List<Book> books = repository.findAll();
 
@@ -62,7 +63,7 @@ public class BookService {
                     Book updateBook = repository.save(book);
                     return mapper.toDto(updateBook);
                 })
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The book with the given ID cannot be updated.",id));
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The book with the given ID cannot be updated.", id));
     }
 
     @Transactional

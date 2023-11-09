@@ -1,7 +1,7 @@
 package service;
 
 import dto.LateFeeDto;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
 import mapper.LateFeeMapper;
 import model.Borrow;

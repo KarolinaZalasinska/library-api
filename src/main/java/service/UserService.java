@@ -1,7 +1,7 @@
 package service;
 
 import dto.UserDto;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
 import mapper.UserMapper;
 import model.User;

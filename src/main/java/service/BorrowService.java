@@ -1,6 +1,7 @@
 package service;
 
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
+import exceptions.copies.CopyNotAvailableException;
 import lombok.RequiredArgsConstructor;
 import model.*;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,7 @@
 package service;
 
 import dto.CategoryDto;
-import exception.GlobalExceptionHandler;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
 import mapper.CategoryMapper;
 import model.Category;

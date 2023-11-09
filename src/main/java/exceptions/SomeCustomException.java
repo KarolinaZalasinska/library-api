@@ -1,4 +1,4 @@
-package exception;
+package exceptions;
 
 public class SomeCustomException extends Throwable {
     public SomeCustomException(String message) {

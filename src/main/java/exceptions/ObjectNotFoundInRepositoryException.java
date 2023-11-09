@@ -1,13 +1,13 @@
-package exception;
+package exceptions;
 
+import lombok.Getter;
+
+@Getter
 public class ObjectNotFoundInRepositoryException extends RuntimeException {
-    private Long id;
+    private final Long id;
 
     public ObjectNotFoundInRepositoryException(String message, Long id) {
         super(message);
         this.id = id;
-    }
-    public Long getId() {
-        return id;
     }
 }

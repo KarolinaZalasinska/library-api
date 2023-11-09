@@ -1,7 +1,7 @@
-package exception;
+package exceptions;
 
-import jdk.jshell.Snippet;
-import org.springframework.beans.factory.parsing.Problem;
+import exceptions.copies.CopyNotAvailableException;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SomeCustomException.class)
     public ResponseEntity<Object> handleCustomException(SomeCustomException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create: " + e.getMessage());
+    }
+
+    @ExceptionHandler(CopyNotAvailableException.class)
+    public ResponseEntity<String> handleCopyNotAvailableException(CopyNotAvailableException e) {
+        Long copyId = e.getCopyId();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Copy not available for copyId: " + copyId);
     }
 
     @ExceptionHandler(RuntimeException.class)

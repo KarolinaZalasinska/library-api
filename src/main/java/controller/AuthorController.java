@@ -1,6 +1,10 @@
 package controller;
 
 import dto.AuthorDto;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,63 +13,49 @@ import service.AuthorService;
 
 import java.util.Collections;
 import java.util.List;
-
+@Api(value = "Author Management System", tags = {"Authors"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/authors")
 public class AuthorController {
     private final AuthorService service;
 
+    @ApiOperation(value = "Create a new author")
     @PostMapping
-    public ResponseEntity<?> createAuthor(@RequestBody AuthorDto authorDto) {
-        AuthorDto author = service.createAuthor(authorDto);
-        return author != null
-                ? ResponseEntity.status(HttpStatus.CREATED).body(author)
-                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create author.");
+    public ResponseEntity<AuthorDto> createAuthor(
+            @ApiParam(value = "Author data", required = true) @Valid @RequestBody AuthorDto authorDto) {
+        AuthorDto createdAuthor = service.createAuthor(authorDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAuthor);
     }
 
+    @ApiOperation(value = "Update an author by ID")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAuthor(@PathVariable Long id, @RequestBody AuthorDto updatedAuthor) {
+    public ResponseEntity<AuthorDto> updateAuthor(
+            @ApiParam(value = "ID of the author", required = true) @PathVariable Long id,
+            @ApiParam(value = "Updated author data", required = true) @RequestBody AuthorDto updatedAuthor) {
         AuthorDto updated = service.updateAuthor(id, updatedAuthor);
-
-        if (updated != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(updated);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update author.");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id, @RequestBody AuthorDto updatedAuthor) {
-//        AuthorDto existingAuthor = authorService.getAuthorById(id);
-//        return existingAuthor != null
-//                ? ResponseEntity.ok(authorService.updateAuthor(id, updatedAuthor))
-//                : ResponseEntity.notFound().build();
-//    }
-
-
+    @ApiOperation(value = "Get an author by ID")
     @GetMapping("/{id}")
-
-    public ResponseEntity<AuthorDto> getAuthorById(@PathVariable Long id) {
+    public ResponseEntity<AuthorDto> getAuthorById(
+            @ApiParam(value = "ID of the author", required = true) @PathVariable Long id) {
         AuthorDto authorDto = service.getAuthorById(id);
-        return authorDto != null
-                ? ResponseEntity.ok(authorDto)
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(authorDto);
     }
 
+    @ApiOperation(value = "Get all authors")
     @GetMapping
     public ResponseEntity<List<AuthorDto>> getAllAuthors() {
         List<AuthorDto> authors = service.getAllAuthors();
-
-        if (authors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(authors);
-        } else {
-            return ResponseEntity.ok(authors);
-        }
+        return ResponseEntity.ok(authors);
     }
 
+    @ApiOperation(value = "Delete an author by ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAuthor(
+            @ApiParam(value = "ID of the author", required = true) @PathVariable Long id) {
         service.deleteAuthor(id);
         return ResponseEntity.noContent().build();
     }

@@ -2,7 +2,7 @@ package service;
 
 import dto.BookDto;
 import dto.LibraryDto;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
 import mapper.BookMapper;
 import mapper.LibraryMapper;
@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import repository.BookRepository;
 import repository.LibraryRepository;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;

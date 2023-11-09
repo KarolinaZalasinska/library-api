@@ -1,7 +1,10 @@
 package service;
 
 import dto.ReviewDto;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
+import exceptions.reviews.EmptyDescriptionException;
+import exceptions.reviews.InvalidRatingException;
+import exceptions.reviews.ReviewAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import mapper.ReviewMapper;
 import model.Book;
@@ -38,43 +41,54 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDto addRatingToBook(final Long bookId, final Long userId, final Integer rating) {
+    public ReviewDto updateReview(final Long id, ReviewDto reviewDto) {
+        return reviewRepository.findById(id)
+                .map(review -> {
+                    reviewMapper.updateEntityFromDto(reviewDto, review);
+                    Review updatedReview = reviewRepository.save(review);
+                    return reviewMapper.toDto(updatedReview);
+                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Review with the given ID was not found.", id));
+    }
+
+    @Transactional
+    public ReviewDto addRatingToBook(final Long bookId, final Long userId, final Integer rating, final String description) {
+        validateInput(rating,description);
+
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The book with the given ID was not found.", bookId));
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book with the given ID was not found.", bookId));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The user with the given ID was not found.", userId));
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("User with the given ID was not found.", userId));
 
-        // Sprawdź, czy użytkownik już ocenił tę książkę
+
         boolean hasUserReviewed = reviewRepository.existsByBookIdAndUserId(bookId, userId);
-
         if (hasUserReviewed) {
             throw new ReviewAlreadyExistsException("User has already reviewed this book.");
         }
 
-        // Sprawdź, czy ocena mieści się w zakresie od 1 do 6
-        if (rating < 1 || rating > 6) {
-            throw new InvalidRatingException("Invalid rating value. The rating must be between 1 and 6.");
-        }
-
-        // Utwórz nową recenzję
         Review review = new Review();
         review.setBook(book);
         review.setUser(user);
         review.setRating(rating);
+        review.setDescription(description);
 
-        // Zapisz recenzję
         Review createdReview = reviewRepository.save(review);
-
-        // Zwróć DTO recenzji
         return reviewMapper.toDto(createdReview);
     }
 
-    @Transactional
-    public ReviewDto addReviewToBook(final Long bookId, final Long userId, final String description) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The book with the given ID was not found.", bookId));
-
-
+    private void validateInput(final Integer rating, final String description) {
+        if (rating == null || rating < 1 || rating > 6) {
+            throw new InvalidRatingException("Invalid rating value. The rating must be between 1 and 6.");
+        }
+        if (description == null || description.trim().isEmpty()) {
+            throw new EmptyDescriptionException("Description must not be empty.");
+        }
     }
+
+    @Transactional
+    public void deleteReview(final Long id) {
+        reviewRepository.deleteById(id);
+    }
+
+    // Zapytanie właśne (Query) lub metoda w repo filtrująca review po najwyższej i najniższej ocenie.
 }

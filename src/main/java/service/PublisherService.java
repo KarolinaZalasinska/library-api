@@ -2,7 +2,7 @@ package service;
 
 import dto.BookDto;
 import dto.PublisherDto;
-import exception.ObjectNotFoundInRepositoryException;
+import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
 import mapper.BookMapper;
 import mapper.PublisherMapper;
@@ -62,13 +62,13 @@ public class PublisherService {
     }
 
     @Transactional
-    public void deletePublisher(Long id) {
+    public void deletePublisher(final Long id) {
         repository.deleteById(id);
     }
 
     public List<BookDto> getBooksByPublisher(final Long publisherId) {
         Publisher publisher = repository.findById(publisherId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Publisher not found with the given ID.", publisherId));
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Publisher with the given ID was not found.", publisherId));
 
         List<Book> books = bookRepository.findByPublisher(publisher);
         return books.stream()
