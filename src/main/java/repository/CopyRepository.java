@@ -18,4 +18,7 @@ public interface CopyRepository extends JpaRepository<Copy, Long> {
     List<Copy> findBorrowedCopiesForUser(@Param("userId") Long userId);
     @Query("SELECT c FROM Copy c WHERE c.borrowedDate IS NOT NULL AND c.returnDate IS NULL AND c.expectedReturnDate < :currentDate")
     List<Copy> findOverdueCopies(@Param("currentDate") LocalDate currentDate);
+
+    List<Copy> findAvailableCopies(LocalDate now);
+    List<Copy> findCurrentlyBorrowedCopies(LocalDate now);
 }

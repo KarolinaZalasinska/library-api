@@ -4,7 +4,6 @@ import exceptions.copies.CopyNotAvailableException;
 import exceptions.reviews.EmptyDescriptionException;
 import exceptions.reviews.InvalidRatingException;
 import exceptions.reviews.ReviewAlreadyExistsException;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;

@@ -54,7 +54,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user")
-    private List<Borrow> loans = new ArrayList<>();
+    private List<Borrow> borrows = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<UserActivity> userActivities;

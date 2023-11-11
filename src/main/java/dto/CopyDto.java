@@ -2,8 +2,8 @@ package dto;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import model.CopyStatus;
 
 import java.time.LocalDate;
 
@@ -13,9 +13,7 @@ public class CopyDto {
 
     @GeneratedValue(strategy = GenerationType.AUTO) // Czy copyNumber powinno być kluczem głównym?????????????
     private Integer copyNumber;
-
-    @NotNull(message = "Data zakupu jest wymagana.")
     private LocalDate purchaseDate;
-
     private BookDto book;
+    private CopyStatus copyStatus;
 }

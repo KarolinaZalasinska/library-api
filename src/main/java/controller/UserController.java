@@ -12,7 +12,7 @@ import service.UserService;
 
 import java.util.List;
 
-@Api(value = "User Management System", tags = {"Users"})
+@Api(value = "User Management System", tags = { "User" })
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")

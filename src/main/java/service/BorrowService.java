@@ -1,23 +1,32 @@
 package service;
 
+import dto.CopyDto;
+import dto.UserActivityDto;
 import exceptions.ObjectNotFoundInRepositoryException;
 import exceptions.copies.CopyNotAvailableException;
 import lombok.RequiredArgsConstructor;
+import mapper.CopyMapper;
+import mapper.UserActivityMapper;
 import model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BorrowService {
-    public final BorrowRepository borrowRepository;
-    public final CopyRepository copyRepository;
-    public final UserRepository userRepository;
-    public final UserActivityRepository userActivityRepository;
+    private final BorrowRepository borrowRepository;
+    private final CopyRepository copyRepository;
+    private final UserRepository userRepository;
+    private final UserActivityRepository userActivityRepository;
+    private final UserActivityMapper userActivityMapper;
+    private final CopyMapper copyMapper;
 
     @Transactional
     public void borrowCopy(Long copyId, Long userId) {
@@ -59,14 +68,19 @@ public class BorrowService {
 
     public boolean isCopyAvailable(final Long id) {
         Optional<Copy> optionalCopy = copyRepository.findById(id);
+
         if (optionalCopy.isEmpty()) {
-            return false;
+            throw new ObjectNotFoundInRepositoryException("Copy with the given ID was not found.", id);
         }
 
         Copy copy = optionalCopy.get();
         LocalDate currentDate = LocalDate.now();
 
-        return copy.getReturnDate() == null || copy.getReturnDate().isBefore(currentDate);
+        if (copy.getReturnDate() != null && !copy.getReturnDate().isBefore(currentDate)) {
+            throw new CopyNotAvailableException("The copy is not available for borrowing.", id);
+        }
+
+        return true;
     }
 
     @Transactional
@@ -109,9 +123,33 @@ public class BorrowService {
         }
         userActivityRepository.save(userActivity);
     }
+
     public void updateCopyStatus(Copy copy, CopyStatus newStatus) {
         copy.setStatus(newStatus);
         copyRepository.save(copy);
     }
 
+    public List<UserActivityDto> getBorrowHistoryForUser(Long userId) {
+        List<Borrow> borrowHistoryForUser = borrowRepository.findBorrowHistoryByUserId(userId);
+
+        if (borrowHistoryForUser.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return borrowHistoryForUser.stream()
+                .map(userActivityMapper::mapBorrowToUserActivityDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<CopyDto> getCurrentBorrowedCopiesForUser(Long userId) {
+        List<Borrow> userBorrowed = borrowRepository.findBorrowHistoryByUserId(userId);
+
+        if (userBorrowed.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return userBorrowed.stream()
+                .filter(borrow -> borrow.getReturnDate() == null)
+                .map(borrow -> copyMapper.toDto(borrow.getCopy()))
+                .collect(Collectors.toList());
+    }
 }

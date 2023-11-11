@@ -14,4 +14,8 @@ public class BorrowDto {
     private LocalDate plannedReturnDate;
     private Long bookId;
     private Long userId;
+    private Long copyId;
+    private LocalDate expectedReturnDate;
+    private LocalDate borrowedDate;
+    private LocalDate returnDate;
 }
