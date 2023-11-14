@@ -1,17 +1,21 @@
 package exceptions;
 
 import exceptions.copies.CopyNotAvailableException;
+import exceptions.reviews.DuplicateBookException;
 import exceptions.reviews.EmptyDescriptionException;
 import exceptions.reviews.InvalidRatingException;
 import exceptions.reviews.ReviewAlreadyExistsException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -50,10 +54,15 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", "Copy is not available");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
+    @ExceptionHandler(DuplicateBookException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ProblemDetail handleDuplicateBookException(DuplicateBookException exception) {
+        String duplicates = exception.getDuplicates()
+                .stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
 
-//    @ExceptionHandler(RuntimeException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ProblemDetail handleRuntimeException(RuntimeException e) {
-//        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-//    }
+        String errorMessage = String.format("Duplicate books found: %s", duplicates);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, errorMessage);
+    }
 }

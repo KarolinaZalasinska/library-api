@@ -3,6 +3,7 @@ package service;
 import dto.BookDto;
 import dto.LibraryDto;
 import exceptions.ObjectNotFoundInRepositoryException;
+import exceptions.reviews.DuplicateBookException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mapper.BookMapper;
@@ -103,7 +104,8 @@ public class LibraryService {
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book not found with id: ", bookId));
 
         if (library.getBooks().contains(book)) {
-            throw new DuplicateBookException("Book with id " + bookId + " already exists in the library with id " + libraryId);
+            throw new DuplicateBookException("Book with id " + bookId + " is already exists in the library with id " + libraryId,
+                    Collections.singletonList(book));
         }
 
         library.addBook(book);
