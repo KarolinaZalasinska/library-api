@@ -9,9 +9,8 @@ import java.time.LocalDate;
 
 @Data
 public class CopyDto {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @GeneratedValue(strategy = GenerationType.AUTO) // Czy copyNumber powinno być kluczem głównym?????????????
     private Integer copyNumber;
     private LocalDate purchaseDate;
     private BookDto book;

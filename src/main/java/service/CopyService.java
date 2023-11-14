@@ -3,7 +3,6 @@ package service;
 import dto.CopyDto;
 import exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
-import mapper.BorrowMapper;
 import mapper.CopyMapper;
 import model.*;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,7 +84,6 @@ public class CopyService {
         }
     }
 
-
     public List<CopyDto> getBorrowedCopiesForUser(final Long userId) {
         List<Copy> copies = copyRepository.findBorrowedCopiesForUser(userId);
         return copies.stream()
@@ -107,6 +104,7 @@ public class CopyService {
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Copy with the given ID was not found.", id));
     }
 
+
     public List<CopyDto> findCurrentlyBorrowedCopies() {
         List<Copy> currentlyBorrowedCopies = copyRepository.findCurrentlyBorrowedCopies(LocalDate.now());
 
@@ -114,4 +112,5 @@ public class CopyService {
                 .map(copyMapper::toDto)
                 .collect(Collectors.toList());
     }
+
 }

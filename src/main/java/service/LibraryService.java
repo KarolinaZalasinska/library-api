@@ -3,6 +3,7 @@ package service;
 import dto.BookDto;
 import dto.LibraryDto;
 import exceptions.ObjectNotFoundInRepositoryException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mapper.BookMapper;
 import mapper.LibraryMapper;
@@ -84,7 +85,6 @@ public class LibraryService {
         repository.deleteById(id);
     }
 
-    @Transactional
     public Set<BookDto> getBooksInLibrary(final Long id) {
         Optional<Library> optionalLibrary = repository.findById(id);
 
@@ -95,14 +95,21 @@ public class LibraryService {
     }
 
     @Transactional
-    public Optional<LibraryDto> addBookToLibrary(Long libraryId, Long bookId) {
-        return repository.findById(libraryId).flatMap(library -> bookRepository.findById(bookId)
-                .map(book -> {
-                    library.addBook(book);
-                    Library updatedLibrary = repository.save(library);
-                    return Optional.of(mapper.toDto(updatedLibrary));
-                })
-                .orElseGet(Optional::empty));
+    public LibraryDto addBookToLibrary(final Long libraryId, final Long bookId) {
+        Library library = repository.findById(libraryId)
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Library not found with id: ", libraryId));
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book not found with id: ", bookId));
+
+        if (library.getBooks().contains(book)) {
+            throw new DuplicateBookException("Book with id " + bookId + " already exists in the library with id " + libraryId);
+        }
+
+        library.addBook(book);
+        Library updatedLibrary = repository.save(library);
+
+        return mapper.toDto(updatedLibrary);
     }
 
 }

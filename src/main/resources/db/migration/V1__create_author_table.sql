@@ -8,7 +8,6 @@ CREATE TABLE Author
     updated_at TIMESTAMP
 );
 
--- Relacja wiele do wielu z książkami (tabela pośrednia book_author)
 CREATE TABLE Book (
                       id INT AUTO_INCREMENT PRIMARY KEY,
                       title VARCHAR(255) NOT NULL,

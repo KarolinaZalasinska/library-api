@@ -1,8 +1,6 @@
 package controller;
 
 import dto.BookDto;
-import exceptions.ObjectNotFoundInRepositoryException;
-import exceptions.SomeCustomException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import service.BookService;
 
 import java.util.List;
-@Api(value = "Book Controller", tags = { "Books" })
+@Api(value = "Book Management System", tags = { "Book" })
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -30,7 +28,7 @@ public class BookController {
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a book by ID")
     public ResponseEntity<BookDto> getBookById(
-            @ApiParam(value = "ID of the book", required = true) @PathVariable Long id) {
+            @ApiParam(value = "ID of the book", required = true) @PathVariable final Long id) {
         BookDto bookDto = service.getBookById(id);
         return ResponseEntity.ok(bookDto);
     }
@@ -59,14 +57,4 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(ObjectNotFoundInRepositoryException.class)
-    public ResponseEntity<Object> handleObjectNotFoundInRepository(ObjectNotFoundInRepositoryException e) {
-        Long id = e.getId();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Object not found with ID " + id);
-    }
-
-    @ExceptionHandler(SomeCustomException.class)
-    public ResponseEntity<Object> handleCustomException(SomeCustomException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create: " + e.getMessage());
-    }
 }

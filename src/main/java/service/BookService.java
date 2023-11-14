@@ -2,6 +2,7 @@ package service;
 
 import dto.BookDto;
 import exceptions.ObjectNotFoundInRepositoryException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mapper.BookMapper;
 import model.Book;
@@ -21,7 +22,7 @@ public class BookService {
     private final BookMapper mapper;
 
     @Transactional
-    public BookDto createBook(final BookDto bookDto) {
+    public BookDto createBook(@Valid final BookDto bookDto) {
         Book book = mapper.toEntity(bookDto);
         Book savedBook = repository.save(book);
         return mapper.toDto(savedBook);
@@ -56,7 +57,7 @@ public class BookService {
 //    }
 
     @Transactional
-    public BookDto updateBook(final Long id, final BookDto bookDto) {
+    public BookDto updateBook(final Long id, @Valid final BookDto bookDto) {
         return repository.findById(id)
                 .map(book -> {
                     mapper.updateEntityFromDto(bookDto, book);

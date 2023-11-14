@@ -117,9 +117,11 @@ public class BorrowService {
         userActivity.setCopy(copy);
         userActivity.setActionType(actionType);
         userActivity.setBorrowDate(borrowDate);
-        userActivity.setReturnDate(returnDate);
+
         if ("return".equals(actionType)) {
             userActivity.setReturnDate(returnDate);
+        } else {
+            userActivity.setReturnDate(null);
         }
         userActivityRepository.save(userActivity);
     }

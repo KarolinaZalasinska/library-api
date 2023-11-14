@@ -13,6 +13,7 @@ import repository.LateFeeRepository;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,19 +41,21 @@ public class LateFeeService {
         return lateFeeMapper.toDto(createdLateFee);
     }
 
-    public LateFeeDto getLateFeeById(final Long id) {
-        Optional<LateFee> optionalLateFee = lateFeeRepository.findById(id);
+    public LateFeeDto getLateFeeById(final Long lateFeeId) {
+        Optional<LateFee> optionalLateFee = lateFeeRepository.findById(lateFeeId);
         return optionalLateFee.map(lateFeeMapper::toDto)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("LateFee not found with the given ID", id));
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("LateFee not found with the given ID", lateFeeId));
     }
 
-    public List<LateFeeDto> getLateFeesByBorrow(final Long borrowId) {
-        return borrowRepository.findById(borrowId)
-                .map(lateFeeRepository::findLateFeesByBorrow)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Borrow not found with the given ID", borrowId))
-                .stream()
-                .map(lateFeeMapper::toDto)
-                .collect(Collectors.toList());
+    public List<LateFeeDto> getAllLateFees() {
+        List<LateFee> lateFees = lateFeeRepository.findAll();
+        if (lateFees.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return lateFees.stream()
+                    .map(lateFeeMapper::toDto)
+                    .collect(Collectors.toList());
+        }
     }
 
 
@@ -82,7 +85,10 @@ public class LateFeeService {
         return 0.0;
     }
 
-    public Optional<LateFeeDto> handleLateReturn(Borrow borrow, LocalDate returnDate) {
+    public Optional<LateFeeDto> calculateAndRecordLateFee(final Long borrowId, LocalDate returnDate) {
+        Borrow borrow = borrowRepository.findById(borrowId)
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Borrow not found with the given ID", borrowId));
+
         double lateFeeAmount = calculateLateFeeForReturn(borrow.getExpectedReturnDate(), returnDate);
 
         if (lateFeeAmount > 0) {
@@ -90,7 +96,6 @@ public class LateFeeService {
             lateFeeRecord.setBorrow(borrow);
             lateFeeRecord.setAmount(lateFeeAmount);
             lateFeeRecord.setDate(returnDate);
-            lateFeeRepository.save(lateFeeRecord);
 
             LateFee createdLateFee = lateFeeRepository.save(lateFeeRecord);
             return Optional.of(lateFeeMapper.toDto(createdLateFee));
@@ -98,4 +103,14 @@ public class LateFeeService {
             return Optional.empty();
         }
     }
+
+    public List<LateFeeDto> getLateFeesByBorrowID(final Long borrowId) {
+        return borrowRepository.findById(borrowId)
+                .map(lateFeeRepository::findLateFeesByBorrow)
+                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Borrow not found with the given ID", borrowId))
+                .stream()
+                .map(lateFeeMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }

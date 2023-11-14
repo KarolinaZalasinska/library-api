@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.BorrowService;
-
 import java.util.List;
 
 @Api(value = "Borrow Management System", tags = {"Borrow"})
@@ -55,11 +54,11 @@ public class BorrowController {
             boolean copyAvailable = service.isCopyAvailable(copyId);
             return ResponseEntity.ok(copyAvailable);
         } catch (CopyNotAvailableException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Copy not available");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Copy is not available");
         }
     }
 
-    @ApiOperation(value = "Get Current Borrowed Copies For User")
+    @ApiOperation(value = "Get current borrowed copies for user")
     @GetMapping()
     public ResponseEntity<List<CopyDto>> getCurrentBorrowedCopiesForUser(
             @ApiParam(value = "ID of the user", required = true) @RequestParam final Long userId){

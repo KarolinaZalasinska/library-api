@@ -29,11 +29,11 @@ public class BookDto {
     private String isbn;
 
     private CopyStatus availability;
-
-    private List<CopyDto> copies;
-    private List<BorrowDto> loans;
-    private PublisherDto publisher;
-    private Set<AuthorDto> authors;
-    private Set<CategoryDto> bookCategories;
-    private Set<LibraryDto> libraries;
+//
+//    private List<CopyDto> copies;
+//    private List<BorrowDto> loans;
+//    private PublisherDto publisher;
+//    private Set<AuthorDto> authors;
+//    private Set<CategoryDto> bookCategories;
+//    private Set<LibraryDto> libraries;
 }

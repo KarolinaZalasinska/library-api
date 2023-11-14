@@ -59,4 +59,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserActivity> userActivities;
 
+    @OneToMany(mappedBy = "borrower")
+    private List<Copy> borrowedCopies;
+
+
 }

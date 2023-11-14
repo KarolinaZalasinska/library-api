@@ -5,18 +5,22 @@ import exceptions.reviews.EmptyDescriptionException;
 import exceptions.reviews.InvalidRatingException;
 import exceptions.reviews.ReviewAlreadyExistsException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ObjectNotFoundInRepositoryException.class)
     public ResponseEntity<Object> handleObjectNotFoundInRepository(ObjectNotFoundInRepositoryException e) {
-        Long id = e.getId();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Object not found with ID " + id);
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("status", "error");
+        errorResponse.put("message", "No object with the given ID was found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @ExceptionHandler(ReviewAlreadyExistsException.class)
@@ -40,14 +44,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CopyNotAvailableException.class)
-    public ResponseEntity<String> handleCopyNotAvailableException(CopyNotAvailableException e) {
-        Long copyId = e.getCopyId();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Copy not available for copyId: " + copyId);
+    public ResponseEntity<Object> handleCopyNotAvailableException(CopyNotAvailableException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("status", "error");
+        errorResponse.put("message", "Copy is not available");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ProblemDetail handleRuntimeException(RuntimeException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ProblemDetail handleRuntimeException(RuntimeException e) {
+//        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+//    }
 }
