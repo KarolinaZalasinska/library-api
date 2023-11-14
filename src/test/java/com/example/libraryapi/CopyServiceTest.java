@@ -1,16 +1,15 @@
 package com.example.libraryapi;
 
-import dto.CopyDto;
-import model.Copy;
+import com.example.libraryapi.dto.CopyDto;
+import com.example.libraryapi.model.Copy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import repository.CopyRepository;
-import service.CopyService;
+import com.example.libraryapi.repository.CopyRepository;
+import com.example.libraryapi.service.CopyService;
 
 import java.time.LocalDate;
 import java.util.Arrays;
