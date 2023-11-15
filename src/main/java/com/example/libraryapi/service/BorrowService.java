@@ -10,8 +10,7 @@ import com.example.libraryapi.repository.CopyRepository;
 import com.example.libraryapi.repository.UserActivityRepository;
 import com.example.libraryapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import com.example.libraryapi.mapper.CopyMapper;
-import com.example.libraryapi.mapper.UserActivityMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +27,7 @@ public class BorrowService {
     private final CopyRepository copyRepository;
     private final UserRepository userRepository;
     private final UserActivityRepository userActivityRepository;
-    private final UserActivityMapper userActivityMapper;
-    private final CopyMapper copyMapper;
+    private final ModelMapper modelMapper;
 
     @Transactional
     public void borrowCopy(Long copyId, Long userId) {
@@ -50,9 +48,7 @@ public class BorrowService {
         updateCopyAndSave(copy, borrow);
         updateCopyStatus(copy, CopyStatus.BORROWED);
         logUserActivity(user, copy, "borrow", currentDate, null);
-
     }
-
 
     private Borrow createBorrowRecord(Copy copy, User user, LocalDate currentDate) {
         LocalDate expectedReturnDate = currentDate.plusDays(30);
@@ -106,7 +102,6 @@ public class BorrowService {
         logUserActivity(user, copy, "return", borrow.getDateOfBorrow(), currentDate);
     }
 
-
     private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDate returnDate) {
         borrow.setReturnDate(returnDate);
         copy.setExpectedReturnDate(returnDate);
@@ -141,12 +136,12 @@ public class BorrowService {
             return Collections.emptyList();
         }
         return borrowHistoryForUser.stream()
-                .map(userActivityMapper::mapBorrowToUserActivityDto)
+                .map(borrow -> modelMapper.map(borrow, UserActivityDto.class))
                 .collect(Collectors.toList());
     }
 
     public List<CopyDto> getCurrentBorrowedCopiesForUser(Long userId) {
-        List<Borrow> userBorrowed = borrowRepository.findBorrowHistoryByUserId(userId);
+        List<Copy> userBorrowed = borrowRepository.findCurrentlyBorrowedCopiesForUser(userId);
 
         if (userBorrowed.isEmpty()) {
             return Collections.emptyList();
@@ -154,7 +149,8 @@ public class BorrowService {
 
         return userBorrowed.stream()
                 .filter(borrow -> borrow.getReturnDate() == null)
-                .map(borrow -> copyMapper.toDto(borrow.getCopy()))
+                .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());
     }
+
 }

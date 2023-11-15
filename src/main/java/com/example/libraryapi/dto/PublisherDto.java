@@ -1,8 +1,9 @@
 package com.example.libraryapi.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Set;
 
 @Data

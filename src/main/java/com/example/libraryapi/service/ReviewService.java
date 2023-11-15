@@ -6,16 +6,17 @@ import com.example.libraryapi.exceptions.reviews.EmptyDescriptionException;
 import com.example.libraryapi.exceptions.reviews.InvalidRatingException;
 import com.example.libraryapi.exceptions.reviews.ReviewAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
-import com.example.libraryapi.mapper.ReviewMapper;
 import com.example.libraryapi.model.Book;
 import com.example.libraryapi.model.Review;
 import com.example.libraryapi.model.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.libraryapi.repository.BookRepository;
 import com.example.libraryapi.repository.ReviewRepository;
 import com.example.libraryapi.repository.UserRepository;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
-    private final ReviewMapper reviewMapper;
+    private final ModelMapper modelMapper;
 
     public List<ReviewDto> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();
@@ -35,31 +36,30 @@ public class ReviewService {
             return Collections.emptyList();
         } else {
             return reviews.stream()
-                    .map(reviewMapper::toDto)
+                    .map(this::convertToDto)
                     .collect(Collectors.toList());
         }
     }
 
     @Transactional
-    public ReviewDto updateReview(final Long id, ReviewDto reviewDto) {
+    public ReviewDto updateReview(final Long id, @Valid final ReviewDto reviewDto) {
         return reviewRepository.findById(id)
                 .map(review -> {
-                    reviewMapper.updateEntityFromDto(reviewDto, review);
+                    updateEntityFromDto(reviewDto, review);
                     Review updatedReview = reviewRepository.save(review);
-                    return reviewMapper.toDto(updatedReview);
+                    return convertToDto(updatedReview);
                 }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Review with the given ID was not found.", id));
     }
 
     @Transactional
     public ReviewDto addRatingToBook(final Long bookId, final Long userId, final Integer rating, final String description) {
-        validateInput(rating,description);
+        validateInput(rating, description);
 
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book with the given ID was not found.", bookId));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("User with the given ID was not found.", userId));
-
 
         boolean hasUserReviewed = reviewRepository.existsByBookIdAndUserId(bookId, userId);
         if (hasUserReviewed) {
@@ -73,7 +73,7 @@ public class ReviewService {
         review.setDescription(description);
 
         Review createdReview = reviewRepository.save(review);
-        return reviewMapper.toDto(createdReview);
+        return convertToDto(createdReview); // ???????????????????????????????????????????
     }
 
     private void validateInput(final Integer rating, final String description) {
@@ -90,5 +90,16 @@ public class ReviewService {
         reviewRepository.deleteById(id);
     }
 
-    // Zapytanie właśne (Query) lub metoda w repo filtrująca review po najwyższej i najniższej ocenie.
+    // Query/metoda w repo filtrująca review po najwyższej i najniższej ocenie.
+    // Dodaj ewentualnie adnotacje @Valid gdzie uznasz to za słuszne.
+
+    private ReviewDto convertToDto(Review review) {
+        return modelMapper.map(review, ReviewDto.class);
+    }
+
+    private void updateEntityFromDto(ReviewDto reviewDto, Review review) {
+        // Aktualizuj pola z reviewDto do obiektu review
+        modelMapper.map(reviewDto, review);
+    }
+    // Query/metoda w repo filtrująca review po najwyższej i najniższej ocenie.
 }

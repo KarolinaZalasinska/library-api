@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.CopyService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Api(value = "Copy Management System", tags = { "Copy" })
@@ -58,6 +59,12 @@ public class CopyController {
         service.deleteCopy(id);
         return ResponseEntity.noContent().build();
     }
+    @ApiOperation("Get available copies now")
+    @GetMapping("/available-now")
+    public ResponseEntity<List<CopyDto>> getAvailableCopiesNow() {
+        List<CopyDto> availableCopiesNow = service.getAvailableCopiesNow();
+        return ResponseEntity.ok(availableCopiesNow);
+    }
 
     @ApiOperation("Get copies for a specific book")
     @GetMapping("/for-book")
@@ -67,12 +74,7 @@ public class CopyController {
         return ResponseEntity.ok(copiesForBook);
     }
 
-    @ApiOperation("Get available copies now")
-    @GetMapping("/available-now")
-    public ResponseEntity<List<CopyDto>> getAvailableCopiesNow() {
-        List<CopyDto> availableCopiesNow = service.getAvailableCopiesNow();
-        return ResponseEntity.ok(availableCopiesNow);
-    }
+
 
     @ApiOperation("Get available copies for a specific book")
     @GetMapping("/available-for-book")
@@ -108,8 +110,9 @@ public class CopyController {
     @ApiOperation("Get currently borrowed copies")
     @GetMapping("/currently-borrowed")
     public ResponseEntity<List<CopyDto>> getCurrentlyBorrowedCopies() {
-        List<CopyDto> currentlyBorrowedCopies = service.findCurrentlyBorrowedCopies();
+        List<CopyDto> currentlyBorrowedCopies = service.getCurrentlyBorrowedCopies();
         return ResponseEntity.ok(currentlyBorrowedCopies);
     }
+
 
 }

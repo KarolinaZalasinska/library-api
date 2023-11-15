@@ -3,12 +3,13 @@ package com.example.libraryapi.service;
 import com.example.libraryapi.dto.CategoryDto;
 import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
 import lombok.RequiredArgsConstructor;
-import com.example.libraryapi.mapper.CategoryMapper;
 import com.example.libraryapi.model.Category;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.libraryapi.repository.CategoryRepository;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -17,47 +18,47 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-    public final CategoryRepository repository;
-    public final CategoryMapper mapper;
+    private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
     @Transactional
-    public CategoryDto createCategory(final CategoryDto categoryDto) {
-        Category category = mapper.toEntity(categoryDto);
-        Category savedCategory = repository.save(category);
-        return mapper.toDto(savedCategory);
+    public CategoryDto createCategory(@Valid final CategoryDto categoryDto) {
+        Category category = modelMapper.map(categoryDto, Category.class);
+        Category savedCategory = categoryRepository.save(category);
+        return modelMapper.map(savedCategory, CategoryDto.class);
     }
 
     public CategoryDto getCategoryById(final Long id) {
-        Optional<Category> optionalCategory = repository.findById(id);
-        return optionalCategory.map(mapper::toDto)
+        Optional<Category> optionalCategory = categoryRepository.findById(id);
+        return optionalCategory.map(c -> modelMapper.map(c, CategoryDto.class))
                 .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The category with the given ID could not be found.", id));
     }
 
     public List<CategoryDto> getAllCategories() {
-        List<Category> categories = repository.findAll();
+        List<Category> categories = categoryRepository.findAll();
 
         if (categories.isEmpty()) {
             return Collections.emptyList();
         } else {
             return categories.stream()
-                    .map(mapper::toDto)
+                    .map(c -> modelMapper.map(c, CategoryDto.class))
                     .collect(Collectors.toList());
         }
     }
 
     @Transactional
-    public CategoryDto updateCategory(final Long id, CategoryDto categoryDto) {
-        return repository.findById(id)
+    public CategoryDto updateCategory(final Long id, @Valid CategoryDto categoryDto) {
+        return categoryRepository.findById(id)
                 .map(category -> {
-                    mapper.updateEntityFromDto(categoryDto, category);
-                    Category updateCategory = repository.save(category);
-                    return mapper.toDto(updateCategory);
+                    modelMapper.map(categoryDto, category);
+                    Category updatedCategory = categoryRepository.save(category);
+                    return modelMapper.map(updatedCategory, CategoryDto.class);
                 }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("The category with the given ID could not be updated.", id));
     }
 
     @Transactional
     public void deleteCategory(final Long id) {
-        repository.deleteById(id);
+        categoryRepository.deleteById(id);
     }
 
 

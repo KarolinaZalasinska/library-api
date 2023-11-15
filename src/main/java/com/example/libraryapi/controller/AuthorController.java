@@ -4,7 +4,7 @@ import com.example.libraryapi.dto.AuthorDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/authors")
 public class AuthorController {
-    private final AuthorService service;
+    private final AuthorService authorService;
 
     @ApiOperation(value = "Create a new author")
     @PostMapping
     public ResponseEntity<AuthorDto> createAuthor(
             @ApiParam(value = "Author data", required = true) @Valid @RequestBody AuthorDto authorDto) {
-        AuthorDto createdAuthor = service.createAuthor(authorDto);
+        AuthorDto createdAuthor = authorService.createAuthor(authorDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAuthor);
     }
 
@@ -32,7 +32,7 @@ public class AuthorController {
     public ResponseEntity<AuthorDto> updateAuthor(
             @ApiParam(value = "ID of the author", required = true) @PathVariable Long id,
             @ApiParam(value = "Updated author data", required = true) @RequestBody AuthorDto updatedAuthor) {
-        AuthorDto updated = service.updateAuthor(id, updatedAuthor);
+        AuthorDto updated = authorService.updateAuthor(id, updatedAuthor);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
@@ -40,14 +40,14 @@ public class AuthorController {
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDto> getAuthorById(
             @ApiParam(value = "ID of the author", required = true) @PathVariable Long id) {
-        AuthorDto authorDto = service.getAuthorById(id);
+        AuthorDto authorDto = authorService.getAuthorById(id);
         return ResponseEntity.ok(authorDto);
     }
 
     @ApiOperation(value = "Get all authors")
     @GetMapping
     public ResponseEntity<List<AuthorDto>> getAllAuthors() {
-        List<AuthorDto> authors = service.getAllAuthors();
+        List<AuthorDto> authors = authorService.getAllAuthors();
         return ResponseEntity.ok(authors);
     }
 
@@ -55,7 +55,7 @@ public class AuthorController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(
             @ApiParam(value = "ID of the author", required = true) @PathVariable Long id) {
-        service.deleteAuthor(id);
+        authorService.deleteAuthor(id);
         return ResponseEntity.noContent().build();
     }
 }

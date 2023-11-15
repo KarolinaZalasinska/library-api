@@ -1,9 +1,11 @@
 package com.example.libraryapi.dto;
 
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.*;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

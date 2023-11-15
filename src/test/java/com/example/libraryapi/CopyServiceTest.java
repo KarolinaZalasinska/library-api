@@ -5,8 +5,8 @@ import com.example.libraryapi.model.Copy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.example.libraryapi.repository.CopyRepository;
 import com.example.libraryapi.service.CopyService;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = LibraryApiApplication.class) // oznacza test integracyjny
 public class CopyServiceTest {
 
-    @MockBean
+    @Mock
     private CopyRepository copyRepository;
 
     @InjectMocks
@@ -41,10 +41,10 @@ public class CopyServiceTest {
         List<Copy> mockCopies = Arrays.asList(copy1, copy2);
 
         // When
-        when(copyRepository.findCurrentlyBorrowedCopies(TODAY)).thenReturn(mockCopies);
+        when(copyRepository.findCurrentlyBorrowedCopies(LocalDate.now())).thenReturn(mockCopies);
 
         // Then
-        List<CopyDto> result = copyService.findCurrentlyBorrowedCopies();
+        List<CopyDto> result = copyService.getCurrentlyBorrowedCopies();
 
         assertEquals(2, result.size(), "Expected 2 borrowed copies");
         assertEquals(1L, result.get(0).getId(), "Expected ID of the first copy to be 1");

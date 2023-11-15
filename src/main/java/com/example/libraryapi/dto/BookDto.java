@@ -1,12 +1,12 @@
 package com.example.libraryapi.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import com.example.libraryapi.model.CopyStatus;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Data

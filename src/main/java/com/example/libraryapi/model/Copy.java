@@ -1,11 +1,12 @@
 package com.example.libraryapi.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class Copy {
     private LocalDate returnDate;
 
     @OneToMany(mappedBy = "copy")
-    private List<Borrow> loans = new ArrayList<>();
+    private List<Borrow> borrows;
 
     @OneToMany(mappedBy = "copy")
     private List<UserActivity>userActivities;
@@ -51,4 +52,5 @@ public class Copy {
     private User borrower;
 
     public void setStatus(CopyStatus newStatus) {}
+
 }
