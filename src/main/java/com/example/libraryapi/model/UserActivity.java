@@ -19,6 +19,8 @@ public class UserActivity {
 
     private String bookTitle;
     private String actionType;
+    private String actionBorrow;
+    private String actionReturn;
     private LocalDate actionDate;
     private LocalDate borrowDate;
     private LocalDate returnDate;

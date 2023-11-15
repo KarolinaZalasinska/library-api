@@ -10,15 +10,9 @@ import java.util.List;
 
 @Repository
 public interface LateFeeRepository extends JpaRepository<LateFee, Long> {
-    // Metoda do pobrania wszystkich opłat za spóźnienie użytkownika
-    List<LateFee> findAllByLoan_User_Id(Long userId);
+    List<LateFee> findAllByBorrow_User_Id(Long userId);
 
-    // Metoda do pobrania opłat za spóźnienie powyżej określonej kwoty
     List<LateFee> findAllByAmountGreaterThan(double amount);
-
-    // Metoda do pobrania opłat za spóźnienie z określonej daty
     List<LateFee> findAllByDate(LocalDate date);
-
-    // wszystkie opłaty za spóźnienie związane z danym wypożyczeniem
     List<LateFee> findLateFeesByBorrow(Borrow borrow);
 }

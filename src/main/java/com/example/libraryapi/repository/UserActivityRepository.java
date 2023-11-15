@@ -8,9 +8,7 @@ import java.util.List;
 
 @Repository
 public interface UserActivityRepository extends JpaRepository<UserActivity, Long> {
-    // Metoda zwracająca historię wypożyczeń dla konkretnego użytkownika
-    List<UserActivity> findByUserIdAndActionBorrow(Long id, String action);
+    List<UserActivity> findByUserIdAndActionBorrow(Long id, String actionBorrow);
+    List<UserActivity> findByUserIdAndActionReturn(Long id, String actionReturn);
 
-    // Metoda zwracająca historię zwrotów dla konkretnego użytkownika
-    List<UserActivity> findByUserIdAndActionReturn(Long id, String action);
 }

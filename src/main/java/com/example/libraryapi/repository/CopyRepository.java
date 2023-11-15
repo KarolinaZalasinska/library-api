@@ -12,8 +12,9 @@ import java.util.List;
 @Repository
 public interface CopyRepository extends JpaRepository<Copy, Long> {
     List<Copy> findByBookId(Long bookId);
-    @Query("SELECT c FROM Copy c WHERE c.borrower IS NULL OR c.expectedReturnDate > :now")
+    @Query("SELECT c FROM Copy c WHERE c.user IS NULL OR c.expectedReturnDate > :now")
     List<Copy> findAvailableCopies(@Param("now") LocalDate now);
+
     @Query("SELECT c FROM Copy as c WHERE c.book.id = :bookId AND (c.borrowedDate IS NULL OR c.borrowedDate < :currentDate) AND (c.returnDate IS NULL OR c.returnDate < :currentDate)")
     List<Copy> findAvailableCopiesForBook(@Param("bookId") Long bookId, @Param("currentDate") LocalDate currentDate);
 
