@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.CategoryDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Category;
 import org.modelmapper.ModelMapper;
@@ -22,7 +22,7 @@ public class CategoryService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public CategoryDto createCategory(@Valid final CategoryDto categoryDto) {
+    public CategoryDto createCategory(@Valid CategoryDto categoryDto) {
         Category category = modelMapper.map(categoryDto, Category.class);
         Category savedCategory = categoryRepository.save(category);
         return modelMapper.map(savedCategory, CategoryDto.class);
@@ -31,7 +31,7 @@ public class CategoryService {
     public CategoryDto getCategoryById(final Long id) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         return optionalCategory.map(c -> modelMapper.map(c, CategoryDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The category with the given ID could not be found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Category with ID " + id + " was not found."));
     }
 
     public List<CategoryDto> getAllCategories() {
@@ -53,7 +53,7 @@ public class CategoryService {
                     modelMapper.map(categoryDto, category);
                     Category updatedCategory = categoryRepository.save(category);
                     return modelMapper.map(updatedCategory, CategoryDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("The category with the given ID could not be updated.", id));
+                }).orElseThrow(() -> new ObjectNotFoundException("Category with ID " + id + " was not found."));
     }
 
     @Transactional

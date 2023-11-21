@@ -9,9 +9,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.LateFeeService;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -25,15 +27,17 @@ public class LateFeeController {
     private final LateFeeService service;
 
     @ApiOperation(value = "Create a new late fee")
-    @PostMapping()
+    @PostMapping("/create")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<LateFeeDto> createNewLateFee(
-            @ApiParam(value = "Provide late fee data to create a new late fee", required = true) @RequestBody LateFeeDto lateFeeDto) {
+            @ApiParam(value = "Provide late fee data to create a new late fee", required = true) @Valid @RequestBody LateFeeDto lateFeeDto) {
         LateFeeDto createdLateFee = service.createLateFee(lateFeeDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLateFee);
     }
 
     @ApiOperation("Get a late fee by ID")
     @GetMapping("/{lateFeeId}")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<LateFeeDto> getLateFeeById(
             @ApiParam(value = "Late fee ID", required = true) @PathVariable final Long lateFeeId) {
         LateFeeDto lateFeeDto = service.getLateFeeById(lateFeeId);
@@ -42,6 +46,7 @@ public class LateFeeController {
 
     @ApiOperation("Get all late fees")
     @GetMapping()
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<LateFeeDto>> showAllLateFees() {
         List<LateFeeDto> lateFees = service.getAllLateFees();
         return ResponseEntity.ok(lateFees);
@@ -50,7 +55,7 @@ public class LateFeeController {
     @ApiOperation("Update a late fee by ID")
     @PutMapping("/{id}")
     public ResponseEntity<LateFeeDto> updateLateFee(
-            @ApiParam(value = "Late fee ID", required = true) @PathVariable final Long id,
+            @ApiParam(value = "Late fee ID", required = true) @Valid @PathVariable final Long id,
             @ApiParam(value = "Update late fee data", required = true) @RequestBody LateFeeDto lateFeeDto) {
         LateFeeDto updatedLateFee = service.updateLateFee(id, lateFeeDto);
         return ResponseEntity.ok(updatedLateFee);
@@ -58,6 +63,7 @@ public class LateFeeController {
 
     @ApiOperation("Remove late fee by ID")
     @DeleteMapping("/{id}")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<Void> removeLateFee(
             @ApiParam(value = "Late fee ID", required = true) @PathVariable final Long id) {
         service.deleteLateFee(id);
@@ -66,19 +72,20 @@ public class LateFeeController {
 
     @ApiOperation("Get late fees by Borrow ID")
     @GetMapping("/by-borrow/{borrowId}")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<LateFeeDto>> getLateFeesByBorrowId(
             @ApiParam(value = "Borrow ID", required = true) @PathVariable final Long borrowId) {
         List<LateFeeDto> lateFees = service.getLateFeesByBorrowID(borrowId);
         return ResponseEntity.ok(lateFees);
     }
-
-    @Secured("ROLE_LIBRARIAN")
+    
     @ApiOperation("Handle late returns and calculate late fees")
     @PostMapping("/handle-late-return")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<Optional<LateFeeDto>> handleLateReturn(
-            @ApiParam(value = "Borrow ID", required = true) @RequestParam Long borrowId,
-            @ApiParam(value = "Return date", required = true) @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate) {
-        Optional<LateFeeDto> lateFeeDto = service.calculateAndRecordLateFee(borrowId, returnDate);
+            @ApiParam(value = "Borrow id", required = true) @RequestParam Long borrowId) {
+        Optional<LateFeeDto> lateFeeDto = service.calculateAndRecordLateFee(borrowId);
         return ResponseEntity.ok(lateFeeDto);
     }
+
 }

@@ -27,20 +27,11 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Tytuł jest wymagany")
+    @NotBlank(message = "Title is required.")
     @Column(nullable = false)
     private String title;
 
-    @NotBlank(message = "Autor jest wymagany")
-    @Column(nullable = false)
-    private String author;
-
-    @NotNull(message = "Data wydania jest wymagana")
-    @PastOrPresent(message = "Data wydania nie może być przyszłością")
-    @Column(nullable = false)
-    private LocalDate releaseDate;
-
-    @Pattern(regexp = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$", message = "Nieprawidłowy numer ISBN.")
+    @Pattern(regexp = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$", message = "Invalid ISBN.")
     @Column(nullable = false)
     private String isbn;
 
@@ -48,25 +39,12 @@ public class Book {
     private CopyStatus availability;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relacja jeden do wielu z egzemplarzami
-    @OneToMany(mappedBy = "book")
-    private List<Copy> copies = new ArrayList<>();
-
-    @OneToMany(mappedBy = "book")
-    private List<Borrow> loans = new ArrayList<>();
-
-    // Relacja wiele do jednego z wydawnictwem
-    @ManyToOne
-    private Publisher publisher;
-
-    // Relacja wiele do wielu z autorami
     @ManyToMany
     @JoinTable(
             name = "book_author",
@@ -74,6 +52,15 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private Set<Author> authors = new HashSet<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<Copy> copies = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<Borrow> borrows = new ArrayList<>();
+
+    @ManyToOne
+    private Publisher publisher;
 
     @ManyToMany
     @JoinTable(
@@ -83,7 +70,6 @@ public class Book {
     )
     private Set<Category> categories = new HashSet<>();
 
-    // Relacja wiele do wielu z bibliotekami
     @ManyToMany
     @JoinTable(
             name = "book_library",

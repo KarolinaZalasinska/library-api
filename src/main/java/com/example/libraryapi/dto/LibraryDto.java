@@ -1,23 +1,18 @@
 package com.example.libraryapi.dto;
 
-import lombok.Data;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.util.Set;
 
-@Data
-public class LibraryDto {
-    private Long id;
+public record LibraryDto(
+        Long id,
 
-    @NotBlank(message = "Nazwa biblioteki jest wymagana.")
-    private String name;
+        @NotBlank(message = "Library name is required.")
+        String name,
 
-    @NotBlank(message = "Adres jest wymagany.")
-    private String address;
+        @NotBlank(message = "Address is required.")
+        String address,
 
-    @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Nieprawidłowy format kodu pocztowego.")
-    private String postalCode;
-
-    private Set<BookDto> books; // ????????????????????????????
+        @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Invalid postal code format.")
+        String postalCode
+) {
 }

@@ -2,7 +2,7 @@ package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.BookDto;
 import com.example.libraryapi.dto.PublisherDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Book;
 import com.example.libraryapi.model.Publisher;
@@ -35,7 +35,7 @@ public class PublisherService {
     public PublisherDto getPublisherById(final Long id) {
         Optional<Publisher> optionalPublisher = publisherRepository.findById(id);
         return optionalPublisher.map(publisher -> modelMapper.map(publisher, PublisherDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Publication with the given id was not found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Publication with id " + id + " was not found."));
     }
 
     public List<PublisherDto> getAllPublishers() {
@@ -51,13 +51,13 @@ public class PublisherService {
     }
 
     @Transactional
-    public PublisherDto updatePublisher(final Long id, @Valid final PublisherDto publisherDto) {
+    public PublisherDto updatePublisher(final Long id, final PublisherDto publisherDto) {
         return publisherRepository.findById(id)
                 .map(publisher -> {
                     modelMapper.map(publisherDto, publisher);
                     Publisher updatePublisher = publisherRepository.save(publisher);
                     return modelMapper.map(updatePublisher, PublisherDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Publication with the given id was not found.", id));
+                }).orElseThrow(() -> new ObjectNotFoundException("Publication with id " + id + " was not found."));
     }
 
     @Transactional
@@ -65,9 +65,9 @@ public class PublisherService {
         publisherRepository.deleteById(id);
     }
 
-    public List<BookDto> getBooksByPublisher(final Long publisherId) {
-        Publisher publisher = publisherRepository.findById(publisherId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Publisher with the given ID was not found.", publisherId));
+    public List<BookDto> getBooksByPublisher(final Long id) {
+        Publisher publisher = publisherRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Publication with id " + id + " was not found."));
 
         List<Book> books = bookRepository.findByPublisher(publisher);
         return books.stream()

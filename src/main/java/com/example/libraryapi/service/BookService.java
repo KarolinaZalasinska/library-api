@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.BookDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Book;
@@ -23,7 +23,7 @@ public class BookService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public BookDto createBook(@Valid final BookDto bookDto) {
+    public BookDto createBook(@Valid BookDto bookDto) {
         Book book = modelMapper.map(bookDto, Book.class);
         Book savedBook = repository.save(book);
         return modelMapper.map(savedBook, BookDto.class);
@@ -32,7 +32,7 @@ public class BookService {
     public BookDto getBookById(final Long id) {
         Optional<Book> optionalBook = repository.findById(id);
         return optionalBook.map(book -> modelMapper.map(book, BookDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book with the given ID was not found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + id + " was not found."));
     }
 
     public List<BookDto> getAllBooks() {
@@ -48,14 +48,14 @@ public class BookService {
     }
 
     @Transactional
-    public BookDto updateBook(final Long id, @Valid final BookDto bookDto) {
+    public BookDto updateBook(final Long id, @Valid BookDto bookDto) {
         return repository.findById(id)
                 .map(book -> {
                     modelMapper.map(bookDto, book);
                     Book updatedBook = repository.save(book);
                     return modelMapper.map(updatedBook, BookDto.class);
                 })
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The book with the given ID cannot be updated.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + id + " was not found."));
     }
 
     @Transactional

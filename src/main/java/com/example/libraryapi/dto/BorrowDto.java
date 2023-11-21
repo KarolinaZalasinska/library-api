@@ -1,21 +1,21 @@
 package com.example.libraryapi.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class BorrowDto {
-    private Long id;
-    private LocalDate dateOfBorrow;
-    private LocalDate plannedReturnDate;
-    private Long bookId;
-    private Long userId;
-    private Long copyId;
-    private LocalDate expectedReturnDate;
-    private LocalDate borrowedDate;
-    private LocalDate returnDate;
+import java.util.List;
+
+public record BorrowDto(
+        Long id,
+        @PastOrPresent(message = "Borrow date must be in the past or present.") LocalDate borrowDate,
+        @Future(message = "Expected return date must be in the future") LocalDate expectedReturnDate,
+        @PastOrPresent(message = "Return date must be in the past or present.") LocalDate returnDate,
+        List<LateFeeDto> lateFees,
+        BookDto book,
+        CopyDto copy,
+        UserDto user
+
+) {
 }

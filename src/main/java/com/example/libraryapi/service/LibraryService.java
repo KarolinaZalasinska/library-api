@@ -2,7 +2,7 @@ package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.BookDto;
 import com.example.libraryapi.dto.LibraryDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import com.example.libraryapi.exceptions.reviews.DuplicateBookException;
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Book;
@@ -35,7 +35,7 @@ public class LibraryService {
     public LibraryDto getLibraryById(final Long id) {
         Optional<Library> optionalLibrary = libraryRepository.findById(id);
         return optionalLibrary.map(library -> modelMapper.map(library, LibraryDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The library with the specified ID could not be found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Library with ID " + id + " was not found."));
     }
 
     public List<LibraryDto> getAllLibraries() {
@@ -56,7 +56,7 @@ public class LibraryService {
                     modelMapper.map(libraryDto, library);
                     Library updatedLibrary = libraryRepository.save(library);
                     return modelMapper.map(updatedLibrary, LibraryDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Failed to update library data.", id));
+                }).orElseThrow(() -> new ObjectNotFoundException("Library with ID " + id + " was not found."));
     }
 
     @Transactional
@@ -76,7 +76,7 @@ public class LibraryService {
                     }
                     Library updatedLibrary = libraryRepository.save(library);
                     return modelMapper.map(updatedLibrary, LibraryDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Failed to update library data.", id));
+                }).orElseThrow(() -> new ObjectNotFoundException("Library with ID " + id + " was not found."));
     }
 
     @Transactional
@@ -92,16 +92,16 @@ public class LibraryService {
             return books.stream()
                     .map(book -> modelMapper.map(book, BookDto.class))
                     .collect(Collectors.toSet());
-        }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Library not found", id));
+        }).orElseThrow(() -> new ObjectNotFoundException("Library with ID " + id + " was not found."));
     }
 
     @Transactional
     public LibraryDto addBookToLibrary(final Long libraryId, final Long bookId) {
         Library library = libraryRepository.findById(libraryId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Library not found with id: ", libraryId));
+                .orElseThrow(() -> new ObjectNotFoundException("Library with id " + libraryId + " was not found."));
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book not found with id: ", bookId));
+                .orElseThrow(() -> new ObjectNotFoundException("Book with id " + bookId + " was not found."));
 
         if (library.getBooks().contains(book)) {
             throw new DuplicateBookException("Book with id " + bookId + " already exists in the library with id " + libraryId,

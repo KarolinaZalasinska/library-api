@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.UserDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.User;
 import org.modelmapper.ModelMapper;
@@ -31,7 +31,7 @@ public class UserService {
     public UserDto getUserById(final Long id) {
         Optional<User> optionalUser = repository.findById(id);
         return optionalUser.map(user -> modelMapper.map(user, UserDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The user with the specified ID could not be found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
     }
 
     public List<UserDto> getAllUsers() {
@@ -46,13 +46,13 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto updateUser(@Valid final Long id, UserDto userDto) {
+    public UserDto updateUser(final Long id, UserDto userDto) {
         return repository.findById(id)
                 .map(user -> {
                     modelMapper.map(userDto, user);
                     User updateUser = repository.save(user);
                     return modelMapper.map(updateUser, UserDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Failed to update data for user with the provided ID.", id));
+                }).orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
     }
 
     @Transactional

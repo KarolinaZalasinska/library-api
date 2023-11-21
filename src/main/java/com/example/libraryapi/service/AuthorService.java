@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.AuthorDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Author;
@@ -23,7 +23,7 @@ public class AuthorService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public AuthorDto createAuthor(@Valid final AuthorDto authorDto) {
+    public AuthorDto createAuthor(@Valid AuthorDto authorDto) {
         Author author = modelMapper.map(authorDto, Author.class);
         Author savedAuthor = repository.save(author);
         return modelMapper.map(savedAuthor, AuthorDto.class);
@@ -32,8 +32,10 @@ public class AuthorService {
     public AuthorDto getAuthorById(final Long id) {
         Optional<Author> optionalAuthor = repository.findById(id);
         return optionalAuthor.map(author -> modelMapper.map(author, AuthorDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Author with the given ID was not found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Author with id " + id + " was not found."));
     }
+
+
 
     public List<AuthorDto> getAllAuthors() {
         List<Author> authors = repository.findAll();
@@ -48,14 +50,14 @@ public class AuthorService {
     }
 
     @Transactional
-    public AuthorDto updateAuthor(final Long id, @Valid final AuthorDto authorDto) {
+    public AuthorDto updateAuthor(final Long id, @Valid AuthorDto authorDto) {
         return repository.findById(id)
                 .map(author -> {
                     modelMapper.map(authorDto, author);
                     Author updateAuthor = repository.save(author);
                     return modelMapper.map(updateAuthor, AuthorDto.class);
                 })
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Author with the given ID was not found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Author with ID " + id + " was not found."));
     }
 
     @Transactional

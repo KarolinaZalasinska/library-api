@@ -1,14 +1,17 @@
 package com.example.libraryapi.dto;
-import lombok.Data;
+
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
-@Data
-public class AuthorDto {
-    private Long id;
+public record AuthorDto(
+        Long id,
 
-    @NotBlank(message = "Imię autora jest wymagane.")
-    private String firstName;
+        @NotBlank(message = "Author's first name cannot be empty.")
+        String firstName,
 
-    @NotBlank(message = "Nazwisko autora jest wymagane.")
-    private String lastName;
+        @NotBlank(message = "Author's last name cannot be empty.")
+        String lastName,
+
+        Set<BookDto> books
+) {
 }

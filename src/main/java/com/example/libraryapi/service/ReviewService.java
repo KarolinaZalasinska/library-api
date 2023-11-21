@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.ReviewDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import com.example.libraryapi.exceptions.reviews.EmptyDescriptionException;
 import com.example.libraryapi.exceptions.reviews.InvalidRatingException;
 import com.example.libraryapi.exceptions.reviews.ReviewAlreadyExistsException;
@@ -48,7 +48,7 @@ public class ReviewService {
                     updateEntityFromDto(reviewDto, review);
                     Review updatedReview = reviewRepository.save(review);
                     return convertToDto(updatedReview);
-                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Review with the given ID was not found.", id));
+                }).orElseThrow(() -> new ObjectNotFoundException("Review with ID " + id + " was not found."));
     }
 
     @Transactional
@@ -56,10 +56,10 @@ public class ReviewService {
         validateInput(rating, description);
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Book with the given ID was not found.", bookId));
+                .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + bookId + " was not found."));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("User with the given ID was not found.", userId));
+                .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
 
         boolean hasUserReviewed = reviewRepository.existsByBookIdAndUserId(bookId, userId);
         if (hasUserReviewed) {

@@ -1,26 +1,24 @@
 package com.example.libraryapi.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ReviewDto {
-    private Long id;
+public record ReviewDto(
+        Long id,
 
-    @NotNull(message = "Ocena jest wymagana.")
-    @Min(value = 1, message = "Ocena musi być większa lub równa 1.")
-    @Max(value = 6, message = "Ocena musi być mniejsza lub równa 6.")
-    private Integer rating;
+        @NotNull(message = "Rating is required.")
+        @Min(value = 1, message = "Rating must be greater than or equal to 1.")
+        @Max(value = 6, message = "Rating must be less than or equal to 6.")
+        Integer rating,
 
-    @NotBlank(message = "Pole 'Opis' jest wymagane.")
-    @Size(max = 50,message = "Opis nie może przekraczać 50 znaków.")
-    private String description;
+        @NotBlank(message = "Description field is required.")
+        @Size(max = 50, message = "Description cannot exceed 50 characters.")
+        String description,
 
-    private Long bookId;
-    private Long userId;
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+
+        Long bookId,
+        Long userId
+) {
 }

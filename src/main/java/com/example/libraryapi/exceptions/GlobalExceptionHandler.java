@@ -8,6 +8,7 @@ import com.example.libraryapi.exceptions.reviews.ReviewAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -18,8 +19,8 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ObjectNotFoundInRepositoryException.class)
-    public ResponseEntity<Object> handleObjectNotFoundInRepository(ObjectNotFoundInRepositoryException e) {
+    @ExceptionHandler(ObjectNotFoundException.class)
+    public ResponseEntity<Object> handleObjectNotFound(ObjectNotFoundException e) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("status", "error");
         errorResponse.put("message", "No object with the given ID was found.");
@@ -64,4 +65,10 @@ public class GlobalExceptionHandler {
         String errorMessage = String.format("Duplicate books found: %s", duplicates);
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, errorMessage);
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied.");
+    }
+
 }

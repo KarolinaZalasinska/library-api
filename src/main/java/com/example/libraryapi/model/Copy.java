@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,29 +22,24 @@ public class Copy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(unique = true)
-    private Integer copyNumber;
-
-    @NotNull(message = "Data zakupu jest wymagana.")
+    @NotNull(message = "Purchase date is required.")
     @Column(nullable = false)
     private LocalDate purchaseDate;
 
-    @Column(nullable = false)
-    private LocalDate dateOfBorrow;
+    @PastOrPresent(message = "Borrow date must be in the past or present.")
+    private LocalDate borrowDate;
 
-    @Column(nullable = false)
+    @Future(message = "Expected return date must be in the future.")
     private LocalDate expectedReturnDate;
 
-    private LocalDate borrowedDate;
-
+    @PastOrPresent(message = "Return date must be in the past or present.")
     private LocalDate returnDate;
 
     @OneToMany(mappedBy = "copy")
     private List<Borrow> borrows;
 
     @OneToMany(mappedBy = "copy")
-    private List<UserActivity>userActivities;
+    private List<UserActivity> userActivities;
 
     @ManyToOne
     private Book book;
@@ -50,6 +47,8 @@ public class Copy {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    public void setStatus(CopyStatus newStatus) {}
+
+    public void setStatus(CopyStatus newStatus) {
+    }
 
 }

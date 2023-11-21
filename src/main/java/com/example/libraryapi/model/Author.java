@@ -16,26 +16,24 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Author")
 public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Imię autora jest wymagane")
+    @NotBlank(message = "Author's first name cannot be empty.")
     @Column(nullable = false)
     private String firstName;
 
-    @NotBlank(message = "Nazwisko autora jest wymagane")
+    @NotBlank(message = "Author's last name cannot be empty.")
     @Column(nullable = false)
     private String lastName;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "authors")

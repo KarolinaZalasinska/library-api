@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.CopyDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import com.example.libraryapi.model.Copy;
 import com.example.libraryapi.repository.CopyRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class CopyService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public CopyDto createCopy(@Valid final CopyDto copyDto) {
+    public CopyDto createCopy(@Valid CopyDto copyDto) {
         Copy copy = modelMapper.map(copyDto, Copy.class);
         Copy savedCopy = copyRepository.save(copy);
         return modelMapper.map(savedCopy, CopyDto.class);
@@ -32,7 +32,7 @@ public class CopyService {
     public CopyDto getCopyById(final Long id) {
         Optional<Copy> optionalCopy = copyRepository.findById(id);
         return optionalCopy.map(copy -> modelMapper.map(copy, CopyDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The copy with the given ID could not be found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + id + " was not found."));
     }
 
     public List<CopyDto> getAllCopies() {
@@ -53,7 +53,7 @@ public class CopyService {
                     modelMapper.map(copyDto, copy);
                     Copy updatedCopy = copyRepository.save(copy);
                     return modelMapper.map(updatedCopy, CopyDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundInRepositoryException("Failed to update the copy with the given ID.", id));
+                }).orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + id + " was not found."));
     }
 
     @Transactional
@@ -99,7 +99,7 @@ public class CopyService {
     public CopyDto getCopyDetails(final Long id) {
         Optional<Copy> copyOptional = copyRepository.findById(id);
         return copyOptional.map(copy -> modelMapper.map(copy, CopyDto.class))
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("Copy with the given ID was not found.", id));
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + id + " was not found."));
     }
 
     public List<CopyDto> getCurrentlyBorrowedCopies() {

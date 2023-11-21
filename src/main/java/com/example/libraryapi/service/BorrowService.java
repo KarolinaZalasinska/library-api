@@ -2,7 +2,7 @@ package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.CopyDto;
 import com.example.libraryapi.dto.UserActivityDto;
-import com.example.libraryapi.exceptions.ObjectNotFoundInRepositoryException;
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import com.example.libraryapi.exceptions.copies.CopyNotAvailableException;
 import com.example.libraryapi.model.*;
 import com.example.libraryapi.repository.BorrowRepository;
@@ -32,10 +32,10 @@ public class BorrowService {
     @Transactional
     public void borrowCopy(Long copyId, Long userId) {
         Copy copy = copyRepository.findById(copyId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The copy with the given ID was not found.", copyId));
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + copyId + " was not found."));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The user with the given ID was not found.", userId));
+                .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
 
         LocalDate currentDate = LocalDate.now();
 
@@ -44,7 +44,7 @@ public class BorrowService {
         }
 
         Borrow borrow = createBorrowRecord(copy, user, currentDate);
-        copy.setBorrowedDate(currentDate);
+        copy.setBorrowDate(currentDate);
         updateCopyAndSave(copy, borrow);
         updateCopyStatus(copy, CopyStatus.BORROWED);
         logUserActivity(user, copy, "borrow", currentDate, null);
@@ -55,7 +55,7 @@ public class BorrowService {
         Borrow borrow = new Borrow();
         borrow.setCopy(copy);
         borrow.setUser(user);
-        borrow.setDateOfBorrow(currentDate);
+        borrow.setBorrowDate(currentDate);
         borrow.setReturnDate(expectedReturnDate);
         return borrow;
     }
@@ -69,7 +69,7 @@ public class BorrowService {
         Optional<Copy> optionalCopy = copyRepository.findById(id);
 
         if (optionalCopy.isEmpty()) {
-            throw new ObjectNotFoundInRepositoryException("Copy with the given ID was not found.", id);
+            throw new ObjectNotFoundException("Copy with ID " + id + " was not found.");
         }
 
         Copy copy = optionalCopy.get();
@@ -85,21 +85,21 @@ public class BorrowService {
     @Transactional
     public void returnCopy(Long copyId, Long userId) {
         Copy copy = copyRepository.findById(copyId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The copy with the given ID was not found.", copyId));
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + copyId + " was not found."));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundInRepositoryException("The user with the given ID was not found.", userId));
+                .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
 
         LocalDate currentDate = LocalDate.now();
 
         Borrow borrow = new Borrow();
         borrow.setCopy(copy);
         borrow.setUser(user);
-        borrow.setDateOfBorrow(currentDate);
+        borrow.setBorrowDate(currentDate);
 
         updateBorrowAndCopy(borrow, copy, currentDate);
         updateCopyStatus(copy, CopyStatus.AVAILABLE);
-        logUserActivity(user, copy, "return", borrow.getDateOfBorrow(), currentDate);
+        logUserActivity(user, copy, "return", borrow.getBorrowDate(), currentDate);
     }
 
     private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDate returnDate) {

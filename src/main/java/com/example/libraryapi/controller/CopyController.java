@@ -7,13 +7,13 @@ import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.CopyService;
 
-import java.time.LocalDate;
 import java.util.List;
 
-@Api(value = "Copy Management System", tags = { "Copy" })
+@Api(value = "Copy Management System", tags = {"Copy"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/copies")
@@ -22,6 +22,7 @@ public class CopyController {
 
     @ApiOperation("Create a new copy")
     @PostMapping()
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<CopyDto> createCopy(
             @ApiParam(value = "Provide copy data to create a new copy", required = true) @RequestBody CopyDto copyDto) {
         CopyDto createdCopy = service.createCopy(copyDto);
@@ -32,8 +33,8 @@ public class CopyController {
     @GetMapping("/{id}")
     public ResponseEntity<CopyDto> getCopyById(
             @ApiParam(value = "ID of the copy", required = true) @PathVariable final Long id) {
-            CopyDto copyDto = service.getCopyById(id);
-            return ResponseEntity.ok(copyDto);
+        CopyDto copyDto = service.getCopyById(id);
+        return ResponseEntity.ok(copyDto);
     }
 
     @ApiOperation("Get all copies")
@@ -45,6 +46,7 @@ public class CopyController {
 
     @ApiOperation("Update a copy by ID")
     @PutMapping("/{id}")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<CopyDto> updateCopy(
             @ApiParam(value = "ID of the copy", required = true) @PathVariable final Long id,
             @ApiParam(value = "Updated copy data", required = true) @RequestBody CopyDto copyDto) {
@@ -54,11 +56,13 @@ public class CopyController {
 
     @ApiOperation("Delete a copy by ID")
     @DeleteMapping("/{id}")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteCopy(
             @ApiParam(value = "ID of the copy", required = true) @PathVariable final Long id) {
         service.deleteCopy(id);
         return ResponseEntity.noContent().build();
     }
+
     @ApiOperation("Get available copies now")
     @GetMapping("/available-now")
     public ResponseEntity<List<CopyDto>> getAvailableCopiesNow() {
@@ -75,7 +79,6 @@ public class CopyController {
     }
 
 
-
     @ApiOperation("Get available copies for a specific book")
     @GetMapping("/available-for-book")
     public ResponseEntity<List<CopyDto>> getAvailableCopiesForBook(
@@ -86,6 +89,7 @@ public class CopyController {
 
     @ApiOperation("Get borrowed copies for a specific user")
     @GetMapping("/borrowed-for-user")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getBorrowedCopiesForUser(
             @ApiParam(value = "ID of the user", required = true) @RequestParam Long userId) {
         List<CopyDto> borrowedCopiesForUser = service.getBorrowedCopiesForUser(userId);
@@ -94,6 +98,7 @@ public class CopyController {
 
     @ApiOperation("Get overdue copies")
     @GetMapping("/overdue")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getOverdueCopies() {
         List<CopyDto> overdueCopies = service.getOverdueCopies();
         return ResponseEntity.ok(overdueCopies);
@@ -109,6 +114,7 @@ public class CopyController {
 
     @ApiOperation("Get currently borrowed copies")
     @GetMapping("/currently-borrowed")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getCurrentlyBorrowedCopies() {
         List<CopyDto> currentlyBorrowedCopies = service.getCurrentlyBorrowedCopies();
         return ResponseEntity.ok(currentlyBorrowedCopies);

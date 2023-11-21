@@ -9,8 +9,10 @@ import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.BorrowService;
+
 import java.util.List;
 
 @Api(value = "Borrow Management System", tags = {"Borrow"})
@@ -22,6 +24,7 @@ public class BorrowController {
 
     @ApiOperation(value = "Borrow a copy")
     @PostMapping("/borrow")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<Void> borrowCopy(
             @ApiParam(value = "ID of the copy", required = true) @RequestParam final Long copyId,
             @ApiParam(value = "ID of the user", required = true) @RequestParam final Long userId) {
@@ -31,6 +34,7 @@ public class BorrowController {
 
     @ApiOperation(value = "Return a copy")
     @PostMapping("/return")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<Void> returnCopy(
             @ApiParam(value = "ID of the copy", required = true) @RequestParam final Long copyId,
             @ApiParam(value = "ID of the user", required = true) @RequestParam final Long userId) {
@@ -40,6 +44,7 @@ public class BorrowController {
 
     @ApiOperation(value = "Get borrow history for a user")
     @GetMapping("/history")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<UserActivityDto>> getBorrowHistoryForUser(
             @ApiParam(value = "ID of the user", required = true) @RequestParam final Long userId) {
         List<UserActivityDto> borrowHistory = service.getBorrowHistoryForUser(userId);
@@ -60,8 +65,9 @@ public class BorrowController {
 
     @ApiOperation(value = "Get current borrowed copies for user")
     @GetMapping()
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getCurrentBorrowedCopiesForUser(
-            @ApiParam(value = "ID of the user", required = true) @RequestParam final Long userId){
+            @ApiParam(value = "ID of the user", required = true) @RequestParam final Long userId) {
         List<CopyDto> currentBorrowedCopiesForUser = service.getCurrentBorrowedCopiesForUser(userId);
         return ResponseEntity.ok(currentBorrowedCopiesForUser);
     }

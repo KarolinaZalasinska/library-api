@@ -1,18 +1,18 @@
 package com.example.libraryapi.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import lombok.Data;
-import com.example.libraryapi.model.CopyStatus;
-
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.util.List;
 
-@Data
-public class CopyDto {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Integer copyNumber;
-    private LocalDate purchaseDate;
-    private BookDto book;
-    private CopyStatus copyStatus;
+public record CopyDto(
+        Long id,
+        @NotNull(message = "Purchase date is required.") LocalDate purchaseDate,
+        @PastOrPresent(message = "Borrow date must be in the past or present.") LocalDate borrowDate,
+        @Future(message = "Expected return date must be in the future.") LocalDate expectedReturnDate,
+        @PastOrPresent(message = "Return date must be in the past or present.") LocalDate returnDate,
+        List<BorrowDto> borrows
+
+) {
 }
