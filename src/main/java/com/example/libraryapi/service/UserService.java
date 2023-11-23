@@ -22,7 +22,7 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public UserDto createUser(@Valid final UserDto userDto) {
+    public UserDto createUser(@Valid UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
         User saveUser = repository.save(user);
         return modelMapper.map(saveUser, UserDto.class);

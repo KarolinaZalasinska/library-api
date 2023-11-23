@@ -26,7 +26,7 @@ public class LibraryService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public LibraryDto createLibrary(@Valid final LibraryDto libraryDto) {
+    public LibraryDto createLibrary(@Valid LibraryDto libraryDto) {
         Library library = modelMapper.map(libraryDto, Library.class);
         Library savedLibrary = libraryRepository.save(library);
         return modelMapper.map(savedLibrary, LibraryDto.class);
@@ -50,7 +50,7 @@ public class LibraryService {
     }
 
     @Transactional
-    public LibraryDto updateLibrary(final Long id, @Valid final LibraryDto libraryDto) {
+    public LibraryDto updateLibrary(final Long id, @Valid LibraryDto libraryDto) {
         return libraryRepository.findById(id)
                 .map(library -> {
                     modelMapper.map(libraryDto, library);

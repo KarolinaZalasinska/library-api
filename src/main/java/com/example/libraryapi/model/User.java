@@ -24,24 +24,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Imię jest wymagane.")
+    @NotBlank(message = "User's first name cannot be empty.")
     @Column(nullable = false)
     private String firstName;
 
-    @NotBlank(message = "Nazwisko jest wymagane.")
+    @NotBlank(message = "User's last name cannot be empty.")
     @Column(nullable = false)
     private String lastName;
 
-    @Email(message = "Nieprawidłowy adres email.")
-    @NotBlank(message = "Email jest wymagany.")
+    @Email(message = "Invalid email address.")
+    @NotBlank(message = "Email is required.")
     @Column(nullable = false, unique = true)
     private String email;
 
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{10,}$",
-            message = "Hasło musi zawierać co najmniej 10 znaków, w tym co najmniej jedną wielką literę, jedną cyfrę i jeden znak specjalny [@#$%^&+=!]."
+            message = "Password must be at least 10 characters long, including at least one uppercase letter, one digit, and one special character [@#$%^&+=!]."
     )
-    @NotBlank(message = "Hasło jest wymagane.")
+    @NotBlank(message = "Password is required.")
     @Column(nullable = false)
     private String password;
 
@@ -49,11 +49,10 @@ public class User {
     private UserRole role;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user")
@@ -64,6 +63,5 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Copy> copies;
-
 
 }

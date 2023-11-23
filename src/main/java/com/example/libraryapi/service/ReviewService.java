@@ -29,6 +29,44 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
+    @Transactional
+    public ReviewDto addRatingToBook(final Long bookId, final Long userId, final Integer rating, final String description) {
+        validateInput(rating, description);
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + bookId + " was not found."));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
+
+        hasUserReviewedBook(bookId, userId);
+
+        Review review = new Review();
+        review.setBook(book);
+        review.setUser(user);
+        review.setRating(rating);
+        review.setDescription(description);
+
+        Review createdReview = reviewRepository.save(review);
+        return convertToDto(createdReview);
+    }
+
+    private void validateInput(final Integer rating, final String description) {
+        if (rating == null || rating < 1 || rating > 6) {
+            throw new InvalidRatingException("Invalid rating value. The rating must be between 1 and 6.");
+        }
+        if (description == null || description.trim().isEmpty()) {
+            throw new EmptyDescriptionException("Description must not be empty.");
+        }
+    }
+
+    private void hasUserReviewedBook(Long bookId, Long userId) {
+        boolean hasUserReviewed = reviewRepository.existsByBookIdAndUserId(bookId, userId);
+        if (hasUserReviewed) {
+            throw new ReviewAlreadyExistsException("User has already reviewed this book.");
+        }
+    }
+
     public List<ReviewDto> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();
 
@@ -42,64 +80,33 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDto updateReview(final Long id, @Valid final ReviewDto reviewDto) {
+    public ReviewDto updateReview(final Long id, @Valid ReviewDto reviewDto) {
         return reviewRepository.findById(id)
                 .map(review -> {
-                    updateEntityFromDto(reviewDto, review);
+                    updateReviewFields(reviewDto, review);
                     Review updatedReview = reviewRepository.save(review);
                     return convertToDto(updatedReview);
                 }).orElseThrow(() -> new ObjectNotFoundException("Review with ID " + id + " was not found."));
     }
 
-    @Transactional
-    public ReviewDto addRatingToBook(final Long bookId, final Long userId, final Integer rating, final String description) {
-        validateInput(rating, description);
 
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + bookId + " was not found."));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
-
-        boolean hasUserReviewed = reviewRepository.existsByBookIdAndUserId(bookId, userId);
-        if (hasUserReviewed) {
-            throw new ReviewAlreadyExistsException("User has already reviewed this book.");
+    private void updateReviewFields(ReviewDto reviewDto, Review review) {
+        if (reviewDto.rating() != null) {
+            review.setRating(reviewDto.rating());
         }
-
-        Review review = new Review();
-        review.setBook(book);
-        review.setUser(user);
-        review.setRating(rating);
-        review.setDescription(description);
-
-        Review createdReview = reviewRepository.save(review);
-        return convertToDto(createdReview); // ???????????????????????????????????????????
-    }
-
-    private void validateInput(final Integer rating, final String description) {
-        if (rating == null || rating < 1 || rating > 6) {
-            throw new InvalidRatingException("Invalid rating value. The rating must be between 1 and 6.");
-        }
-        if (description == null || description.trim().isEmpty()) {
-            throw new EmptyDescriptionException("Description must not be empty.");
+        if (reviewDto.description() != null) {
+            review.setDescription(reviewDto.description());
         }
     }
+
 
     @Transactional
     public void deleteReview(final Long id) {
         reviewRepository.deleteById(id);
     }
 
-    // Query/metoda w repo filtrująca review po najwyższej i najniższej ocenie.
-    // Dodaj ewentualnie adnotacje @Valid gdzie uznasz to za słuszne.
-
     private ReviewDto convertToDto(Review review) {
         return modelMapper.map(review, ReviewDto.class);
     }
 
-    private void updateEntityFromDto(ReviewDto reviewDto, Review review) {
-        // Aktualizuj pola z reviewDto do obiektu review
-        modelMapper.map(reviewDto, review);
-    }
-    // Query/metoda w repo filtrująca review po najwyższej i najniższej ocenie.
 }

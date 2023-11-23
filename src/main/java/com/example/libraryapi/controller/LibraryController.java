@@ -32,10 +32,10 @@ public class LibraryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLibrary);
     }
 
-    @ApiOperation(value = "Get a library by ID")
+    @ApiOperation(value = "Get a library by id")
     @GetMapping("/{id}")
     public ResponseEntity<LibraryDto> getLibraryById(
-            @ApiParam(value = "ID of the library", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Id of the library", required = true) @PathVariable final Long id) {
         LibraryDto libraryDto = service.getLibraryById(id);
         return ResponseEntity.ok(libraryDto);
     }
@@ -47,45 +47,45 @@ public class LibraryController {
         return ResponseEntity.ok(libraries);
     }
 
-    @ApiOperation(value = "Update a library by ID")
+    @ApiOperation(value = "Update a library by id")
     @PutMapping("/{id}")
     public ResponseEntity<LibraryDto> updateLibrary(
-            @ApiParam(value = "ID of the library", required = true) @Valid @PathVariable final Long id,
+            @ApiParam(value = "Id of the library", required = true) @Valid @PathVariable final Long id,
             @ApiParam(value = "Update library data", required = true) @RequestBody LibraryDto libraryDto) {
         LibraryDto updatedLibrary = service.updateLibrary(id, libraryDto);
         return ResponseEntity.ok(updatedLibrary);
     }
 
-    @ApiOperation(value = "Update specific fields of a library by ID")
+    @ApiOperation(value = "Update specific fields of a library by id")
     @PatchMapping("/{id}")
     public ResponseEntity<LibraryDto> updateLibraryField(
-            @ApiParam(value = "Library ID", required = true) @Valid @PathVariable final Long id,
+            @ApiParam(value = "Library id", required = true) @Valid @PathVariable final Long id,
             @ApiParam(value = "Fields to update", required = true) @RequestBody Map<String, String> fieldsToUpdate) {
         LibraryDto updatedLibrary = service.updateLibraryField(id, fieldsToUpdate);
         return ResponseEntity.ok(updatedLibrary);
     }
 
-    @ApiOperation(value = "Delete a library by ID")
+    @ApiOperation(value = "Delete a library by id")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLibrary(
-            @ApiParam(value = "Library ID", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Library id", required = true) @PathVariable final Long id) {
         service.deleteLibrary(id);
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Get books in a library by ID")
+    @ApiOperation(value = "Get books in a library by id")
     @GetMapping("/{id}/books")
     public ResponseEntity<Set<BookDto>> getBooksInLibrary(
-            @ApiParam(value = "Library ID", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Library id", required = true) @PathVariable final Long id) {
         Set<BookDto> books = service.getBooksInLibrary(id);
         return ResponseEntity.ok(books);
     }
 
-    @ApiOperation(value = "Add a book to a library by ID")
+    @ApiOperation(value = "Add a book to a library by id")
     @PostMapping("/{libraryId}/add-book/{bookId}")
     public ResponseEntity<LibraryDto> addBookToLibrary(
-            @ApiParam(value = "Library ID", required = true) @PathVariable final Long libraryId,
-            @ApiParam(value = "Book ID", required = true) @PathVariable final Long bookId) {
+            @ApiParam(value = "Library id", required = true) @PathVariable final Long libraryId,
+            @ApiParam(value = "Book id", required = true) @PathVariable final Long bookId) {
         LibraryDto updatedLibrary = service.addBookToLibrary(libraryId, bookId);
         return ResponseEntity.ok(updatedLibrary);
     }

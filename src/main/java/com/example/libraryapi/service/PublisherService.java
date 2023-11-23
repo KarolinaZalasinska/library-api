@@ -26,7 +26,7 @@ public class PublisherService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public PublisherDto createPublisher(@Valid final PublisherDto publisherDto) {
+    public PublisherDto createPublisher(@Valid PublisherDto publisherDto) {
         Publisher publisher = modelMapper.map(publisherDto, Publisher.class);
         Publisher savedPublisher = publisherRepository.save(publisher);
         return modelMapper.map(savedPublisher, PublisherDto.class);
@@ -51,7 +51,7 @@ public class PublisherService {
     }
 
     @Transactional
-    public PublisherDto updatePublisher(final Long id, final PublisherDto publisherDto) {
+    public PublisherDto updatePublisher(final Long id, PublisherDto publisherDto) {
         return publisherRepository.findById(id)
                 .map(publisher -> {
                     modelMapper.map(publisherDto, publisher);

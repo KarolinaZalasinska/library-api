@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -20,31 +21,29 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Ocena jest wymagana")
-    @Min(value = 1, message = "Ocena musi być większa lub równa 1")
-    @Max(value = 6, message = "Ocena musi być mniejsza lub równa 6")
+    @NotNull(message = "Book rating is required.")
+    @Range(min = 1, max = 6, message = "Rating must be between 1 and 6.")
     @Column(nullable = false)
     private Integer rating;
 
-    @NotBlank(message = "Pole 'Opis' jest wymagane")
-    @Size(max = 50,message = "Opis nie może przekraczać 50 znaków.")
+    @NotBlank(message = "Book review description is required.")
+    @Size(max = 50, message = "Description cannot exceed 50 characters.")
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    private LocalDateTime creationDate;
+
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relacja wiele do jednego (Many-to-One) z książką
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
 
-    // Relacja wiele do jednego (Many-to-One) z użytkownikiem, który stworzył recenzję
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

@@ -20,17 +20,17 @@ public class Publisher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Nazwa wydawnictwa jest wymagana.")
+    @NotBlank(message = "Publisher name is required.")
     @Column(nullable = false)
     private String name;
 
-    @NotBlank(message = "Adres jest wymagany.")
+    @NotBlank(message = "Publisher address is required.")
     @Column(nullable = false)
     private String address;
 
-    @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Nieprawidłowy format kodu pocztowego.")
+    @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Invalid postal code format.")
     @Column(nullable = false)
-    private char postalCode;
+    private String postalCode;
 
     @OneToMany(mappedBy = "publisher")
     private Set<Book> books = new HashSet<>();

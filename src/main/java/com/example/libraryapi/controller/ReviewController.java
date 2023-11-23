@@ -7,34 +7,18 @@ import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.ReviewService;
 
 import java.util.List;
 
-@Api(value = "Review Management System", tags = "{ Reviews }")
+@Api(value = "Review Management System", tags = "{ Review }")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reviews")
 public class ReviewController {
     private final ReviewService service;
-
-    @ApiOperation(value = "Get all reviews")
-    @GetMapping
-    public ResponseEntity<List<ReviewDto>> getAllReviews() {
-        List<ReviewDto> reviews = service.getAllReviews();
-        return ResponseEntity.ok(reviews);
-    }
-
-    @ApiOperation(value = "Update a review by ID")
-    @PutMapping("/{id}")
-    public ResponseEntity<ReviewDto> updateReview(
-            @PathVariable @ApiParam(value = "ID of the review", required = true) final Long id,
-            @RequestBody @ApiParam(value = "Updated review data", required = true) ReviewDto reviewDto) {
-        ReviewDto updatedReview = service.updateReview(id, reviewDto);
-        return ResponseEntity.ok(updatedReview);
-    }
-
     @ApiOperation(value = "Add a rating to book")
     @PostMapping
     public ResponseEntity<ReviewDto> addRatingToBook(
@@ -45,11 +29,29 @@ public class ReviewController {
         ReviewDto addedReview = service.addRatingToBook(bookId, userId, rating, description);
         return ResponseEntity.status(HttpStatus.CREATED).body(addedReview);
     }
+    @ApiOperation(value = "Get all reviews")
+    @GetMapping
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    public ResponseEntity<List<ReviewDto>> getAllReviews() {
+        List<ReviewDto> reviews = service.getAllReviews();
+        return ResponseEntity.ok(reviews);
+    }
 
-    @ApiOperation(value = "Delete a review by ID")
+    @ApiOperation(value = "Update a review by id")
+    @PutMapping("/{id}")
+    public ResponseEntity<ReviewDto> updateReview(
+            @PathVariable @ApiParam(value = "Id of the review", required = true) final Long id,
+            @RequestBody @ApiParam(value = "Updated review data", required = true) ReviewDto reviewDto) {
+        ReviewDto updatedReview = service.updateReview(id, reviewDto);
+        return ResponseEntity.ok(updatedReview);
+    }
+
+
+
+    @ApiOperation(value = "Delete a review by id")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(
-            @PathVariable @ApiParam(value = "ID of the review", required = true) final Long id) {
+            @PathVariable @ApiParam(value = "Id of the review", required = true) final Long id) {
         service.deleteReview(id);
         return ResponseEntity.noContent().build();
     }

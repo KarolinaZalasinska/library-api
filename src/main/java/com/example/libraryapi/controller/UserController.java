@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.UserService;
 
@@ -27,33 +28,35 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get a user by ID")
+    @ApiOperation(value = "Get a user by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<UserDto> getUserById(
-            @ApiParam(value = "ID of the user", required = true) @PathVariable Long id) {
+            @ApiParam(value = "Id of the user", required = true) @PathVariable Long id) {
         UserDto userDto = service.getUserById(id);
         return ResponseEntity.ok(userDto);
     }
 
     @GetMapping
     @ApiOperation(value = "Get all users")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> users = service.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update a user by ID")
+    @ApiOperation(value = "Update a user by id")
     public ResponseEntity<UserDto> updateUser(
-            @ApiParam(value = "ID of the user", required = true) @PathVariable Long id,
+            @ApiParam(value = "Id of the user", required = true) @PathVariable Long id,
             @ApiParam(value = "Updated user data", required = true) @RequestBody UserDto userDto) {
         UserDto updatedUser = service.updateUser(id, userDto);
         return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete a user by ID")
+    @ApiOperation(value = "Delete a user by id")
     public ResponseEntity<Void> deleteUser(
-            @ApiParam(value = "ID of the user", required = true) @PathVariable Long id) {
+            @ApiParam(value = "Id of the user", required = true) @PathVariable Long id) {
         service.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 public record UserDto(
         Long id,
 
-        @NotBlank(message = "First name is required.")
+        @NotBlank(message = "User's first name cannot be empty.")
         String firstName,
 
-        @NotBlank(message = "Last name is required.")
+        @NotBlank(message = "User's last name cannot be empty.")
         String lastName,
 
         @Email(message = "Invalid email address.")
@@ -27,8 +27,6 @@ public record UserDto(
         @NotBlank(message = "Password is required.")
         String password,
 
-        UserRole role,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        UserRole role
 ) {
 }

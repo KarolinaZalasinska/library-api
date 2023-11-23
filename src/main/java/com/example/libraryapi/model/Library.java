@@ -20,15 +20,15 @@ public class Library {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Nazwa biblioteki jest wymagana.")
+    @NotBlank(message = "Library name is required.")
     @Column(nullable = false)
     private String name;
 
-    @NotBlank(message = "Adres jest wymagany.")
+    @NotBlank(message = "Library address is required.")
     @Column(nullable = false)
     private String address;
 
-    @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Nieprawidłowy format kodu pocztowego.")
+    @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Invalid postal code format.")
     @Column(nullable = false, length = 6)
     private String postalCode;
 

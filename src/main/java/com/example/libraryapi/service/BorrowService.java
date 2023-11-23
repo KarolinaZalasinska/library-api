@@ -47,7 +47,7 @@ public class BorrowService {
         copy.setBorrowDate(currentDate);
         updateCopyAndSave(copy, borrow);
         updateCopyStatus(copy, CopyStatus.BORROWED);
-        logUserActivity(user, copy, "borrow", currentDate, null);
+        logUserActivity(user, copy, ActionType.BORROW, currentDate, null);
     }
 
     private Borrow createBorrowRecord(Copy copy, User user, LocalDate currentDate) {
@@ -99,7 +99,7 @@ public class BorrowService {
 
         updateBorrowAndCopy(borrow, copy, currentDate);
         updateCopyStatus(copy, CopyStatus.AVAILABLE);
-        logUserActivity(user, copy, "return", borrow.getBorrowDate(), currentDate);
+        logUserActivity(user, copy, ActionType.RETURN, borrow.getBorrowDate(), currentDate);
     }
 
     private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDate returnDate) {
@@ -109,14 +109,14 @@ public class BorrowService {
         copyRepository.save(copy);
     }
 
-    private void logUserActivity(User user, Copy copy, String actionType, LocalDate borrowDate, LocalDate returnDate) {
+    private void logUserActivity(User user, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate returnDate) {
         UserActivity userActivity = new UserActivity();
         userActivity.setUser(user);
         userActivity.setCopy(copy);
         userActivity.setActionType(actionType);
         userActivity.setBorrowDate(borrowDate);
 
-        if ("return".equals(actionType)) {
+        if (ActionType.RETURN.equals(actionType)) {
             userActivity.setReturnDate(returnDate);
         } else {
             userActivity.setReturnDate(null);
