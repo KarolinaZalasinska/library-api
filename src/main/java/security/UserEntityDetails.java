@@ -17,9 +17,10 @@ public class UserEntityDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return entity.getRoles()
                 .stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
     }
+
 
     @Override
     public String getPassword() {

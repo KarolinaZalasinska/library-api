@@ -26,5 +26,8 @@ public class UserEntity extends BaseEntity {
     )
     private Set<Role> roles = new HashSet<>();
 
+    public UserEntity(String username, String encode) {
+        super();
+    }
 }
 
