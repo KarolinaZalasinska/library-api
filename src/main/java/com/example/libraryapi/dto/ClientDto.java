@@ -5,9 +5,8 @@ import com.example.libraryapi.model.UserRole;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
 
-public record UserDto(
+public record ClientDto(
         Long id,
 
         @NotBlank(message = "User's first name cannot be empty.")

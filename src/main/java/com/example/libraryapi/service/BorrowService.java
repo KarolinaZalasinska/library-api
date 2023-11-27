@@ -1,14 +1,14 @@
 package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.CopyDto;
-import com.example.libraryapi.dto.UserActivityDto;
+import com.example.libraryapi.dto.ClientActivityDto;
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import com.example.libraryapi.exceptions.copies.CopyNotAvailableException;
 import com.example.libraryapi.model.*;
 import com.example.libraryapi.repository.BorrowRepository;
 import com.example.libraryapi.repository.CopyRepository;
-import com.example.libraryapi.repository.UserActivityRepository;
-import com.example.libraryapi.repository.UserRepository;
+import com.example.libraryapi.repository.ClientActivityRepository;
+import com.example.libraryapi.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 public class BorrowService {
     private final BorrowRepository borrowRepository;
     private final CopyRepository copyRepository;
-    private final UserRepository userRepository;
-    private final UserActivityRepository userActivityRepository;
+    private final ClientRepository userRepository;
+    private final ClientActivityRepository userActivityRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -34,7 +34,7 @@ public class BorrowService {
         Copy copy = copyRepository.findById(copyId)
                 .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + copyId + " was not found."));
 
-        User user = userRepository.findById(userId)
+        Client user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
 
         LocalDate currentDate = LocalDate.now();
@@ -50,7 +50,7 @@ public class BorrowService {
         logUserActivity(user, copy, ActionType.BORROW, currentDate, null);
     }
 
-    private Borrow createBorrowRecord(Copy copy, User user, LocalDate currentDate) {
+    private Borrow createBorrowRecord(Copy copy, Client user, LocalDate currentDate) {
         LocalDate expectedReturnDate = currentDate.plusDays(30);
         Borrow borrow = new Borrow();
         borrow.setCopy(copy);
@@ -87,7 +87,7 @@ public class BorrowService {
         Copy copy = copyRepository.findById(copyId)
                 .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + copyId + " was not found."));
 
-        User user = userRepository.findById(userId)
+        Client user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
 
         LocalDate currentDate = LocalDate.now();
@@ -109,8 +109,8 @@ public class BorrowService {
         copyRepository.save(copy);
     }
 
-    private void logUserActivity(User user, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate returnDate) {
-        UserActivity userActivity = new UserActivity();
+    private void logUserActivity(Client user, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate returnDate) {
+        ClientActivity userActivity = new ClientActivity();
         userActivity.setUser(user);
         userActivity.setCopy(copy);
         userActivity.setActionType(actionType);
@@ -129,14 +129,14 @@ public class BorrowService {
         copyRepository.save(copy);
     }
 
-    public List<UserActivityDto> getBorrowHistoryForUser(Long userId) {
+    public List<ClientActivityDto> getBorrowHistoryForUser(Long userId) {
         List<Borrow> borrowHistoryForUser = borrowRepository.findBorrowHistoryByUserId(userId);
 
         if (borrowHistoryForUser.isEmpty()) {
             return Collections.emptyList();
         }
         return borrowHistoryForUser.stream()
-                .map(borrow -> modelMapper.map(borrow, UserActivityDto.class))
+                .map(borrow -> modelMapper.map(borrow, ClientActivityDto.class))
                 .collect(Collectors.toList());
     }
 

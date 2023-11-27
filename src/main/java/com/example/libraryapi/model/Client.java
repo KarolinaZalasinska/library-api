@@ -19,7 +19,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -59,7 +59,7 @@ public class User {
     private List<Borrow> borrows = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<UserActivity> userActivities;
+    private List<ClientActivity> userActivities;
 
     @OneToMany(mappedBy = "user")
     private List<Copy> copies;

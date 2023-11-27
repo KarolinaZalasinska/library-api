@@ -10,7 +10,6 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,14 +38,14 @@ public class Copy {
     private List<Borrow> borrows;
 
     @OneToMany(mappedBy = "copy")
-    private List<UserActivity> userActivities;
+    private List<ClientActivity> userActivities;
 
     @ManyToOne
     private Book book;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Client user;
 
     public void setStatus(CopyStatus newStatus) {
     }

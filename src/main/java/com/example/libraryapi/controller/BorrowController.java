@@ -1,7 +1,7 @@
 package com.example.libraryapi.controller;
 
 import com.example.libraryapi.dto.CopyDto;
-import com.example.libraryapi.dto.UserActivityDto;
+import com.example.libraryapi.dto.ClientActivityDto;
 import com.example.libraryapi.exceptions.copies.CopyNotAvailableException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,9 +45,9 @@ public class BorrowController {
     @ApiOperation(value = "Get borrow history for a user")
     @GetMapping("/history")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
-    public ResponseEntity<List<UserActivityDto>> getBorrowHistoryForUser(
+    public ResponseEntity<List<ClientActivityDto>> getBorrowHistoryForUser(
             @ApiParam(value = "ID of the user", required = true) @RequestParam final Long userId) {
-        List<UserActivityDto> borrowHistory = service.getBorrowHistoryForUser(userId);
+        List<ClientActivityDto> borrowHistory = service.getBorrowHistoryForUser(userId);
         return ResponseEntity.ok(borrowHistory);
     }
 

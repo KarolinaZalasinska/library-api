@@ -8,13 +8,13 @@ import com.example.libraryapi.exceptions.reviews.ReviewAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Book;
 import com.example.libraryapi.model.Review;
-import com.example.libraryapi.model.User;
+import com.example.libraryapi.model.Client;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.libraryapi.repository.BookRepository;
 import com.example.libraryapi.repository.ReviewRepository;
-import com.example.libraryapi.repository.UserRepository;
+import com.example.libraryapi.repository.ClientRepository;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final ClientRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -36,7 +36,7 @@ public class ReviewService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + bookId + " was not found."));
 
-        User user = userRepository.findById(userId)
+        Client user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
 
         hasUserReviewedBook(bookId, userId);

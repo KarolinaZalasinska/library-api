@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserActivity {
+public class ClientActivity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class UserActivity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Client user;
 
     @ManyToOne
     @JoinColumn(name = "copy_id")

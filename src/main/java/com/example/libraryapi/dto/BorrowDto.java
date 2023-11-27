@@ -1,9 +1,7 @@
 package com.example.libraryapi.dto;
 
 import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,7 +13,7 @@ public record BorrowDto(
         List<LateFeeDto> lateFees,
         BookDto book,
         CopyDto copy,
-        UserDto user
+        ClientDto user
 
 ) {
 }

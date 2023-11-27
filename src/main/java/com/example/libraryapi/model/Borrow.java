@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.checkerframework.checker.optional.qual.Present;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.PastOrPresent;
@@ -39,7 +38,7 @@ public class Borrow {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Client user;
 
     @ManyToOne
     @JoinColumn(name = "copy_id")

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 private final SecurityProperties securityProperties;
-    // private static final int MAX_LOGIN_ATTEMPTS = 3;
+    private static final int MAX_LOGIN_ATTEMPTS = 3;
     @Value("${security.max-login-attempts}")
     private int maxLoginAttempts;
 }

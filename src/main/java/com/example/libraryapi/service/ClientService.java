@@ -1,13 +1,13 @@
 package com.example.libraryapi.service;
 
-import com.example.libraryapi.dto.UserDto;
+import com.example.libraryapi.dto.ClientDto;
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
-import com.example.libraryapi.model.User;
+import com.example.libraryapi.model.Client;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.libraryapi.repository.UserRepository;
+import com.example.libraryapi.repository.ClientRepository;
 
 import javax.validation.Valid;
 import java.util.Collections;
@@ -17,47 +17,47 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
-    private final UserRepository repository;
+public class ClientService {
+    private final ClientRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
-    public UserDto createUser(@Valid UserDto userDto) {
-        User user = modelMapper.map(userDto, User.class);
-        User saveUser = repository.save(user);
-        return modelMapper.map(saveUser, UserDto.class);
+    public ClientDto createUser(@Valid ClientDto userDto) {
+        Client user = modelMapper.map(userDto, Client.class);
+        Client saveUser = userRepository.save(user);
+        return modelMapper.map(saveUser, ClientDto.class);
     }
 
-    public UserDto getUserById(final Long id) {
-        Optional<User> optionalUser = repository.findById(id);
-        return optionalUser.map(user -> modelMapper.map(user, UserDto.class))
+    public ClientDto getUserById(final Long id) {
+        Optional<Client> optionalUser = userRepository.findById(id);
+        return optionalUser.map(user -> modelMapper.map(user, ClientDto.class))
                 .orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
     }
 
-    public List<UserDto> getAllUsers() {
-        List<User> users = repository.findAll();
+    public List<ClientDto> getAllUsers() {
+        List<Client> users = userRepository.findAll();
         if (users.isEmpty()) {
             return Collections.emptyList();
         } else {
             return users.stream()
-                    .map(user -> modelMapper.map(user, UserDto.class))
+                    .map(user -> modelMapper.map(user, ClientDto.class))
                     .collect(Collectors.toList());
         }
     }
 
     @Transactional
-    public UserDto updateUser(final Long id, UserDto userDto) {
-        return repository.findById(id)
+    public ClientDto updateUser(final Long id, ClientDto userDto) {
+        return userRepository.findById(id)
                 .map(user -> {
                     modelMapper.map(userDto, user);
-                    User updateUser = repository.save(user);
-                    return modelMapper.map(updateUser, UserDto.class);
+                    Client updateUser = userRepository.save(user);
+                    return modelMapper.map(updateUser, ClientDto.class);
                 }).orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
     }
 
     @Transactional
     public void deleteUser(final Long id) {
-        repository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
 }

@@ -31,6 +31,7 @@ public class BookController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a book by ID")
+    //@PreAuthorize - po zalogowaniu przez użytkowników i adminów
     public ResponseEntity<BookDto> getBookById(
             @ApiParam(value = "Book ID", required = true) @PathVariable final Long id) {
         BookDto bookDto = bookService.getBookById(id);
@@ -39,6 +40,7 @@ public class BookController {
 
     @GetMapping
     @ApiOperation(value = "Get all books")
+    //wszyscy
     public ResponseEntity<List<BookDto>> getAllBooks() {
         List<BookDto> books = bookService.getAllBooks();
         return ResponseEntity.ok(books);

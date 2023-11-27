@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
-public record UserActivityDto(
+public record ClientActivityDto(
         Long id,
 
         @NotBlank(message = "Book title is required.")
