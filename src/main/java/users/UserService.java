@@ -28,9 +28,18 @@ public class UserService {
 
         UserEntity entity = new UserEntity(username, encoder.encode(password));
         Role userRole = roleRepository.findByName("ROLE_USER");
-        entity.setRoles(Set.of());
+        entity.setRoles(Set.of(userRole));
 
         repository.save(entity);
         return RegisterResponse.success();
+    }
+
+
+    public void registerUserWithRole(String username, String password, String roleName) {
+        UserEntity userEntity = new UserEntity(username, password);
+        Role role = new Role(roleName);
+
+        userEntity.addRole(role);
+        repository.save(userEntity);
     }
 }

@@ -10,22 +10,17 @@ import java.util.Set;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
-    public Role() {
-    }
-
-    public Role(String name) {
-        this.name = name;
-    }
 
     @ManyToMany(mappedBy = "roles")
     private Set<UserEntity> users = new HashSet<>();
-
+    public void addUser(UserEntity user) {
+        this.users.add(user);
+        user.getRoles().add(this);
+    }
 }
-
