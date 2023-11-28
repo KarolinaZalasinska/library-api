@@ -1,4 +1,4 @@
-package com.example.libraryapi.security;
+package com.example.libraryapi.users;
 
 public class RegisterResponse {
     private final boolean success;

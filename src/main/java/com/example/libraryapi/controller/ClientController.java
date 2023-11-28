@@ -16,7 +16,7 @@ import java.util.List;
 @Api(value = "User Management System", tags = { "User" })
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/clients")
 public class ClientController {
     private final ClientService service;
 
