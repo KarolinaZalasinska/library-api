@@ -1,6 +1,6 @@
 package com.example.libraryapi.model;
 
-import domain.UserEntity;
+import com.example.libraryapi.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

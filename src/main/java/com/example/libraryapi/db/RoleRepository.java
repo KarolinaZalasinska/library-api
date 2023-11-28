@@ -1,4 +1,4 @@
-package db;
+package com.example.libraryapi.db;
 
 import com.example.libraryapi.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

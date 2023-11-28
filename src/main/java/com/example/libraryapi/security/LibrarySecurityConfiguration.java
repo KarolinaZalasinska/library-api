@@ -1,5 +1,6 @@
-package security;
+package com.example.libraryapi.security;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,11 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@ConfigurationProperties("library-security-configuration")
 public class LibrarySecurityConfiguration {
     public UserDetailsService userDetailsService;
     public PasswordEncoder passwordEncoder;
     @Bean
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configureAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
@@ -30,7 +32,7 @@ public class LibrarySecurityConfiguration {
     }
 
     @Bean
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configureSecurity(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers("/users/**").permitAll()

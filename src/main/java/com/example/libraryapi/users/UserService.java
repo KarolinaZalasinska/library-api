@@ -1,14 +1,14 @@
-package users;
+package com.example.libraryapi.users;
 
 import com.example.libraryapi.model.Role;
-import db.RoleRepository;
-import db.UserEntityRepository;
-import domain.UserEntity;
+import com.example.libraryapi.db.RoleRepository;
+import com.example.libraryapi.db.UserEntityRepository;
+import com.example.libraryapi.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import security.RegisterResponse;
+import com.example.libraryapi.security.RegisterResponse;
 
 import java.util.Set;
 

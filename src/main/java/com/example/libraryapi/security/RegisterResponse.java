@@ -1,4 +1,4 @@
-package security;
+package com.example.libraryapi.security;
 
 public class RegisterResponse {
     private final boolean success;

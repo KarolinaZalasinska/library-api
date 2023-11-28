@@ -1,4 +1,4 @@
-package domain;
+package com.example.libraryapi.domain;
 
 import com.example.libraryapi.model.Role;
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Entity
 @Data
 @Table(name = "users")
-public class UserEntity implements UserDetails {
+public class UserEntity implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,29 +32,24 @@ public class UserEntity implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
     }
 
-    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }

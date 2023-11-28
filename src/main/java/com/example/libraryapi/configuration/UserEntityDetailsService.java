@@ -1,23 +1,21 @@
 package com.example.libraryapi.configuration;
 
-import db.UserEntityRepository;
-import domain.UserEntity;
+import com.example.libraryapi.db.UserEntityRepository;
+import com.example.libraryapi.domain.UserEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import security.UserEntityDetails;
+import com.example.libraryapi.users.UserEntityDetails;
 
 @Service
+@RequiredArgsConstructor
 public class UserEntityDetailsService implements UserDetailsService { // klasa odpowiedzialna za dostarczanie informacji o użytkowniku.
-    private final UserEntityRepository userEntityRepository;
-
-    public UserEntityDetailsService(UserEntityRepository userEntityRepository) {
-        this.userEntityRepository = userEntityRepository;
-    }
+    private final UserEntityRepository repository;
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userEntityRepository.findByUsername(username)
+        UserEntity user = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         return new UserEntityDetails(user);

@@ -1,7 +1,7 @@
-package users;
+package com.example.libraryapi.users;
 
-import db.UserEntityRepository;
-import domain.UserEntity;
+import com.example.libraryapi.db.UserEntityRepository;
+import com.example.libraryapi.domain.UserEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

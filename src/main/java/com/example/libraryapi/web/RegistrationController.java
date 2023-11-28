@@ -1,7 +1,7 @@
-package web;
+package com.example.libraryapi.web;
 
 import com.example.libraryapi.service.LibraryUserService;
-import domain.UserEntity;
+import com.example.libraryapi.domain.UserEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

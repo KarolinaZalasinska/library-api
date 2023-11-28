@@ -1,6 +1,6 @@
-package security;
+package com.example.libraryapi.users;
 
-import domain.UserEntity;
+import com.example.libraryapi.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

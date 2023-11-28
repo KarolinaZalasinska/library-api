@@ -1,6 +1,5 @@
 package com.example.libraryapi;
 
-import com.example.libraryapi.configuration.LibraryApiApplication;
 import com.example.libraryapi.dto.CopyDto;
 import com.example.libraryapi.model.Copy;
 import org.junit.jupiter.api.Test;

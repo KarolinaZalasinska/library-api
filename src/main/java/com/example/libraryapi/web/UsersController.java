@@ -1,4 +1,4 @@
-package web;
+package com.example.libraryapi.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import security.RegisterResponse;
-import users.UserService;
+import com.example.libraryapi.security.RegisterResponse;
+import com.example.libraryapi.users.UserService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
