@@ -1,7 +1,7 @@
 package users;
 
 import com.example.libraryapi.model.Role;
-import com.example.libraryapi.repository.RoleRepository;
+import db.RoleRepository;
 import db.UserEntityRepository;
 import domain.UserEntity;
 import lombok.AllArgsConstructor;
@@ -22,11 +22,18 @@ public class UserService {
 
     @Transactional
     public RegisterResponse register(String username, String password) {
-        if (repository.findByUsernameIgnoreCase(username).isPresent()) {
+        if (repository.findByUsername(username).isPresent()) {
             return RegisterResponse.failure("Account already exists.");
         }
 
-        UserEntity entity = new UserEntity(username, encoder.encode(password));
+        UserEntity entity = new UserEntity();
+        entity.setUsername(username);
+        entity.setPassword(encoder.encode(password));
+
+        // Ustawienia dodatkowe dla nowego użytkownika (jeśli istnieją)
+        // entity.setFirstName(firstName);
+        // entity.setLastName(lastName);
+
         Role userRole = roleRepository.findByName("ROLE_USER");
         entity.setRoles(Set.of(userRole));
 
@@ -34,10 +41,16 @@ public class UserService {
         return RegisterResponse.success();
     }
 
-
     public void registerUserWithRole(String username, String password, String roleName) {
-        UserEntity userEntity = new UserEntity(username, password);
-        Role role = new Role(roleName);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        userEntity.setPassword(encoder.encode(password));
+
+        // Ustawienia dodatkowe dla nowego użytkownika (jeśli istnieją)
+        // userEntity.setFirstName(firstName);
+        // userEntity.setLastName(lastName);
+
+        Role role = new Role();
 
         userEntity.addRole(role);
         repository.save(userEntity);

@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
-import com.example.libraryapi.model.LibraryUser;
-import com.example.libraryapi.repository.LibraryUserRepository;
+import db.UserEntityRepository;
+import domain.UserEntity;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,12 +11,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Data
 public class LibraryUserService {
-    private LibraryUserRepository libraryUserRepository;
-
+    private UserEntityRepository userEntityRepository;
     private BCryptPasswordEncoder passwordEncoder;
 
-    public void saveUser(LibraryUser user) {
+    public void saveUser(UserEntity user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        libraryUserRepository.save(user);
+        userEntityRepository.save(user);
     }
 }
