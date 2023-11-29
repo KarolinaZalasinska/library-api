@@ -1,35 +1,45 @@
 package com.example.libraryapi.users;
 
 import com.example.libraryapi.domain.UserEntity;
-import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
-public class UserEntityDetails implements UserDetails {
-    private final UserEntity entity;
+
+public class CustomUserDetails implements UserDetails {
+    private final UserEntity userEntity;
+
+    public CustomUserDetails(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return entity.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+        // Map roles to GrantedAuthority
+        Set<GrantedAuthority> authorities = userEntity.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toSet());
-    }
 
+        // Map authorities to GrantedAuthority
+        authorities.addAll(userEntity.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                .collect(Collectors.toSet()));
+
+        return authorities;
+    }
 
     @Override
     public String getPassword() {
-        return entity.getPassword();
+        return userEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return entity.getUsername();
+        return userEntity.getUsername();
     }
 
     @Override
@@ -49,6 +59,6 @@ public class UserEntityDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return userEntity.isEnabled();
     }
 }

@@ -1,40 +1,28 @@
 package com.example.libraryapi.users;
 
-import com.example.libraryapi.db.UserEntityRepository;
 import com.example.libraryapi.domain.UserEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.example.libraryapi.domain.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Service
-public class CustomUserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserEntityRepository userEntityRepository;
+    private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserEntityRepository userEntityRepository) {
-        this.userEntityRepository = userEntityRepository;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> libraryUserOptional = userEntityRepository.findByUsername(username);
-        UserEntity libraryUser = libraryUserOptional.orElseThrow(() ->
-                new UsernameNotFoundException("Użytkownik o nazwie: " + username + " nie został znaleziony"));
-
-        return org.springframework.security.core.userdetails.User
-                .withUsername(libraryUser.getUsername())
-                .password(libraryUser.getPassword())
-                .authorities(libraryUser.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .collect(Collectors.toList()))
-                .accountExpired(!libraryUser.isAccountNonExpired())
-                .accountLocked(!libraryUser.isAccountNonLocked())
-                .credentialsExpired(!libraryUser.isCredentialsNonExpired())
-                .disabled(!libraryUser.isEnabled())
-                .build();
+        UserEntity userEntity = userRepository.findByUsername(username);
+        if (userEntity == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        return new CustomUserDetails(userEntity);
     }
 }
+

@@ -30,17 +30,6 @@ class UsersController {
         }
     }
 
-//    @PostMapping
-//    public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command){
-//        return register
-//                .register(command.username,command.password)
-//                .handle(
-//                        entity-> ResponseEntity.accepted().build(),
-//                        error ->ResponseEntity.badRequest().body(error)
-//                );
-//    }
-
-
     @Data
     static class RegisterCommand {
         @Email

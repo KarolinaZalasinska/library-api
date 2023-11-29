@@ -1,8 +1,10 @@
 package com.example.libraryapi.domain;
 
 import com.example.libraryapi.model.Role;
+import com.example.libraryapi.users.Authority;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,9 +24,10 @@ public class UserEntity implements UserDetails{
     private Long id;
     private String username;
     private String password;
+    @Getter
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -32,10 +35,21 @@ public class UserEntity implements UserDetails{
     )
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Authority> authorities = new HashSet<>();
+
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+        return authorities.stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
                 .collect(Collectors.toSet());
+    }
+
+    public void addAuthority(String authority) {
+        Authority authorityEntity = new Authority();
+        authorityEntity.setUser(this);
+        authorityEntity.setAuthority(authority);
+        authorities.add(authorityEntity);
     }
 
     public boolean isAccountNonExpired() {
@@ -48,10 +62,6 @@ public class UserEntity implements UserDetails{
 
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 
     public void addRole(Role role) {
