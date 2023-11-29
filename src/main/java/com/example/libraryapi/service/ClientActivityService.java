@@ -19,21 +19,21 @@ public class ClientActivityService {
     private final ClientActivityRepository repository;
     private final ModelMapper modelMapper;
 
-    public List<ClientActivityDto> getUserBorrowHistory(final Long id) {
-        List<ClientActivity> userActivities = Optional.ofNullable(repository.findByUserIdAndActionType(id, ActionType.BORROW))
+    public List<ClientActivityDto> getClientBorrowHistory(final Long id) {
+        List<ClientActivity> clientActivities = Optional.ofNullable(repository.findByClientIdAndActionType(id, ActionType.BORROW))
                 .orElse(Collections.emptyList());
 
-        return userActivities.stream()
+        return clientActivities.stream()
                 .map(userActivity -> modelMapper.map(userActivity, ClientActivityDto.class))
                 .collect(Collectors.toList());
     }
 
 
-    public List<ClientActivityDto> getUserReturnHistory(final Long id) {
-        List<ClientActivity> userActivities = Optional.ofNullable(repository.findByUserIdAndActionType(id, ActionType.RETURN))
+    public List<ClientActivityDto> getClientReturnHistory(final Long id) {
+        List<ClientActivity> clientActivities = Optional.ofNullable(repository.findByClientIdAndActionType(id, ActionType.RETURN))
                 .orElse(Collections.emptyList());
 
-        return userActivities.stream()
+        return clientActivities.stream()
                 .map(userActivity -> modelMapper.map(userActivity, ClientActivityDto.class))
                 .collect(Collectors.toList());
     }

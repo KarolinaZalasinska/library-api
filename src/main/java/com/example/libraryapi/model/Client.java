@@ -24,11 +24,11 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "User's first name cannot be empty.")
+    @NotBlank(message = "Client's first name cannot be empty.")
     @Column(nullable = false)
     private String firstName;
 
-    @NotBlank(message = "User's last name cannot be empty.")
+    @NotBlank(message = "Client's last name cannot be empty.")
     @Column(nullable = false)
     private String lastName;
 
@@ -45,8 +45,8 @@ public class Client {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+//    @Enumerated(EnumType.STRING)
+//    private UserRole role;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -55,13 +55,13 @@ public class Client {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "client")
     private List<Borrow> borrows = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "client")
     private List<ClientActivity> userActivities;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "client")
     private List<Copy> copies;
 
 }

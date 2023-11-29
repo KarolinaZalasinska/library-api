@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 public interface CopyRepository extends JpaRepository<Copy, Long> {
     List<Copy> findByBookId(Long bookId);
-    @Query("SELECT c FROM Copy c WHERE c.user IS NULL OR c.expectedReturnDate > :now")
+    @Query("SELECT c FROM Copy c WHERE c.client IS NULL OR c.expectedReturnDate > :now")
     List<Copy> findAvailableCopies(@Param("now") LocalDate now);
 
     @Query("SELECT c FROM Copy as c WHERE c.book.id = :bookId AND (c.borrowDate IS NULL OR c.borrowDate < :currentDate) AND (c.returnDate IS NULL OR c.returnDate < :currentDate)")
@@ -18,7 +18,7 @@ public interface CopyRepository extends JpaRepository<Copy, Long> {
     @Query("SELECT c FROM Copy c WHERE c.borrowDate IS NOT NULL AND c.returnDate IS NULL AND c.expectedReturnDate < :currentDate")
     List<Copy> findOverdueCopies(@Param("currentDate") LocalDate currentDate);
 
-    List<Copy> findBorrowedCopiesByUserId(Long userId);
+    List<Copy> findBorrowedCopiesByClientId(Long clientId);
     @Query("SELECT c FROM Copy c WHERE c.borrowDate IS NOT NULL AND c.returnDate IS NULL AND c.expectedReturnDate < :currentDate")
    List<Copy> findCurrentlyBorrowedCopies(@Param("currentDate") LocalDate currentDate);
 }

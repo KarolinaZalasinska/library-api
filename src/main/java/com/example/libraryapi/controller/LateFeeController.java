@@ -35,11 +35,11 @@ public class LateFeeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLateFee);
     }
 
-    @ApiOperation("Get a late fee by ID")
+    @ApiOperation("Get a late fee by id")
     @GetMapping("/{lateFeeId}")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<LateFeeDto> getLateFeeById(
-            @ApiParam(value = "Late fee ID", required = true) @PathVariable final Long lateFeeId) {
+            @ApiParam(value = "Late fee id", required = true) @PathVariable final Long lateFeeId) {
         LateFeeDto lateFeeDto = service.getLateFeeById(lateFeeId);
         return ResponseEntity.ok(lateFeeDto);
     }
@@ -52,29 +52,29 @@ public class LateFeeController {
         return ResponseEntity.ok(lateFees);
     }
 
-    @ApiOperation("Update a late fee by ID")
+    @ApiOperation("Update a late fee by id")
     @PutMapping("/{id}")
     public ResponseEntity<LateFeeDto> updateLateFee(
-            @ApiParam(value = "Late fee ID", required = true) @Valid @PathVariable final Long id,
+            @ApiParam(value = "Late fee id", required = true) @Valid @PathVariable final Long id,
             @ApiParam(value = "Update late fee data", required = true) @RequestBody LateFeeDto lateFeeDto) {
         LateFeeDto updatedLateFee = service.updateLateFee(id, lateFeeDto);
         return ResponseEntity.ok(updatedLateFee);
     }
 
-    @ApiOperation("Remove late fee by ID")
+    @ApiOperation("Remove late fee by id")
     @DeleteMapping("/{id}")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<Void> removeLateFee(
-            @ApiParam(value = "Late fee ID", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Late fee id", required = true) @PathVariable final Long id) {
         service.deleteLateFee(id);
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation("Get late fees by Borrow ID")
+    @ApiOperation("Get late fees by borrow id")
     @GetMapping("/by-borrow/{borrowId}")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<LateFeeDto>> getLateFeesByBorrowId(
-            @ApiParam(value = "Borrow ID", required = true) @PathVariable final Long borrowId) {
+            @ApiParam(value = "Borrow id", required = true) @PathVariable final Long borrowId) {
         List<LateFeeDto> lateFees = service.getLateFeesByBorrowID(borrowId);
         return ResponseEntity.ok(lateFees);
     }

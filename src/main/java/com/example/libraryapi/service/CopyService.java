@@ -82,8 +82,8 @@ public class CopyService {
                 .collect(Collectors.toList());
     }
 
-    public List<CopyDto> getBorrowedCopiesForUser(final Long userId) {
-        List<Copy> copies = copyRepository.findBorrowedCopiesByUserId(userId);
+    public List<CopyDto> getBorrowedCopiesForClient(final Long clientId) {
+        List<Copy> copies = copyRepository.findBorrowedCopiesByClientId(clientId);
         return copies.stream()
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());

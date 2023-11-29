@@ -8,8 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 public interface BorrowRepository extends JpaRepository<Borrow, Long> {
-    List<Borrow> findBorrowHistoryByUserId(Long userId);
-    @Query("SELECT b.copy FROM Borrow b WHERE b.user.id = :userId AND b.returnDate IS NULL")
-    List<Copy> findCurrentlyBorrowedCopiesForUser(@Param("userId") Long userId);
+    List<Borrow> findBorrowHistoryByClientId(Long clientId);
+    @Query("SELECT b.copy FROM Borrow b WHERE b.client.id = :clientId AND b.returnDate IS NULL")
+    List<Copy> findCurrentlyBorrowedCopiesForClient(@Param("clientId") Long clientId);
 
 }

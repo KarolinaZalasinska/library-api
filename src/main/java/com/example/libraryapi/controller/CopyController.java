@@ -29,10 +29,10 @@ public class CopyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCopy);
     }
 
-    @ApiOperation("Get a copy by ID")
+    @ApiOperation("Get a copy by id")
     @GetMapping("/{id}")
     public ResponseEntity<CopyDto> getCopyById(
-            @ApiParam(value = "ID of the copy", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Copy id", required = true) @PathVariable final Long id) {
         CopyDto copyDto = service.getCopyById(id);
         return ResponseEntity.ok(copyDto);
     }
@@ -44,21 +44,21 @@ public class CopyController {
         return ResponseEntity.ok(copies);
     }
 
-    @ApiOperation("Update a copy by ID")
+    @ApiOperation("Update a copy by id")
     @PutMapping("/{id}")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<CopyDto> updateCopy(
-            @ApiParam(value = "ID of the copy", required = true) @PathVariable final Long id,
+            @ApiParam(value = "Copy id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Updated copy data", required = true) @RequestBody CopyDto copyDto) {
         CopyDto updatedCopy = service.updateCopy(id, copyDto);
         return ResponseEntity.ok(updatedCopy);
     }
 
-    @ApiOperation("Delete a copy by ID")
+    @ApiOperation("Delete a copy by id")
     @DeleteMapping("/{id}")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteCopy(
-            @ApiParam(value = "ID of the copy", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Copy id", required = true) @PathVariable final Long id) {
         service.deleteCopy(id);
         return ResponseEntity.noContent().build();
     }
@@ -73,7 +73,7 @@ public class CopyController {
     @ApiOperation("Get copies for a specific book")
     @GetMapping("/for-book")
     public ResponseEntity<List<CopyDto>> getCopiesForBook(
-            @ApiParam(value = "ID of the book", required = true) @RequestParam Long bookId) {
+            @ApiParam(value = "Book id", required = true) @RequestParam Long bookId) {
         List<CopyDto> copiesForBook = service.getCopiesForBook(bookId);
         return ResponseEntity.ok(copiesForBook);
     }
@@ -82,17 +82,17 @@ public class CopyController {
     @ApiOperation("Get available copies for a specific book")
     @GetMapping("/available-for-book")
     public ResponseEntity<List<CopyDto>> getAvailableCopiesForBook(
-            @ApiParam(value = "ID of the book", required = true) @RequestParam Long bookId) {
+            @ApiParam(value = "Book id", required = true) @RequestParam Long bookId) {
         List<CopyDto> availableCopiesForBook = service.getAvailableCopiesForBook(bookId);
         return ResponseEntity.ok(availableCopiesForBook);
     }
 
-    @ApiOperation("Get borrowed copies for a specific user")
-    @GetMapping("/borrowed-for-user")
+    @ApiOperation("Get borrowed copies for a specific client")
+    @GetMapping("/borrowed-for-client")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
-    public ResponseEntity<List<CopyDto>> getBorrowedCopiesForUser(
-            @ApiParam(value = "ID of the user", required = true) @RequestParam Long userId) {
-        List<CopyDto> borrowedCopiesForUser = service.getBorrowedCopiesForUser(userId);
+    public ResponseEntity<List<CopyDto>> getBorrowedCopiesForClient(
+            @ApiParam(value = "Client id", required = true) @RequestParam Long clientId) {
+        List<CopyDto> borrowedCopiesForUser = service.getBorrowedCopiesForClient(clientId);
         return ResponseEntity.ok(borrowedCopiesForUser);
     }
 
@@ -107,7 +107,7 @@ public class CopyController {
     @ApiOperation("Get copy details by ID")
     @GetMapping("/details/{id}")
     public ResponseEntity<CopyDto> getCopyDetails(
-            @ApiParam(value = "ID of the copy", required = true) @PathVariable Long id) {
+            @ApiParam(value = "Copy id", required = true) @PathVariable Long id) {
         CopyDto copyDetails = service.getCopyDetails(id);
         return ResponseEntity.ok(copyDetails);
     }

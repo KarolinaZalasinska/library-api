@@ -13,34 +13,34 @@ import com.example.libraryapi.service.ClientService;
 
 import java.util.List;
 
-@Api(value = "User Management System", tags = { "User" })
+@Api(value = "Client Management System", tags = { "Client" })
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/clients")
 public class ClientController {
     private final ClientService service;
 
-    @ApiOperation(value = "Create a new user")
+    @ApiOperation(value = "Create a new client")
     @PostMapping
-    public ResponseEntity<ClientDto> createUser(
-            @ApiParam(value = "Provide user data to create a new user", required = true) @RequestBody ClientDto userDto) {
-        ClientDto createdUser = service.createUser(userDto);
+    public ResponseEntity<ClientDto> createClient(
+            @ApiParam(value = "Provide user data to create a new client", required = true) @RequestBody ClientDto clientDto) {
+        ClientDto createdUser = service.createClient(clientDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get a user by id")
+    @ApiOperation(value = "Get a client by id")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<ClientDto> getUserById(
-            @ApiParam(value = "Id of the user", required = true) @PathVariable Long id) {
-        ClientDto userDto = service.getUserById(id);
+            @ApiParam(value = "Id of the client", required = true) @PathVariable Long id) {
+        ClientDto userDto = service.getClientById(id);
         return ResponseEntity.ok(userDto);
     }
 
     @GetMapping
-    @ApiOperation(value = "Get all users")
+    @ApiOperation(value = "Get all clients")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientDto>> getAllUsers() {
-        List<ClientDto> users = service.getAllUsers();
+        List<ClientDto> users = service.getAllClients();
         return ResponseEntity.ok(users);
     }
 
@@ -49,7 +49,7 @@ public class ClientController {
     public ResponseEntity<ClientDto> updateUser(
             @ApiParam(value = "Id of the user", required = true) @PathVariable Long id,
             @ApiParam(value = "Updated user data", required = true) @RequestBody ClientDto userDto) {
-        ClientDto updatedUser = service.updateUser(id, userDto);
+        ClientDto updatedUser = service.updateClient(id, userDto);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -57,7 +57,7 @@ public class ClientController {
     @ApiOperation(value = "Delete a user by id")
     public ResponseEntity<Void> deleteUser(
             @ApiParam(value = "Id of the user", required = true) @PathVariable Long id) {
-        service.deleteUser(id);
+        service.deleteClient(id);
         return ResponseEntity.noContent().build();
     }
 }

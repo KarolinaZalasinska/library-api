@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 public class BorrowService {
     private final BorrowRepository borrowRepository;
     private final CopyRepository copyRepository;
-    private final ClientRepository userRepository;
-    private final ClientActivityRepository userActivityRepository;
+    private final ClientRepository clientRepository;
+    private final ClientActivityRepository clientActivityRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -34,7 +34,7 @@ public class BorrowService {
         Copy copy = copyRepository.findById(copyId)
                 .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + copyId + " was not found."));
 
-        Client user = userRepository.findById(userId)
+        Client user = clientRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
 
         LocalDate currentDate = LocalDate.now();
@@ -50,11 +50,11 @@ public class BorrowService {
         logUserActivity(user, copy, ActionType.BORROW, currentDate, null);
     }
 
-    private Borrow createBorrowRecord(Copy copy, Client user, LocalDate currentDate) {
+    private Borrow createBorrowRecord(Copy copy, Client client, LocalDate currentDate) {
         LocalDate expectedReturnDate = currentDate.plusDays(30);
         Borrow borrow = new Borrow();
         borrow.setCopy(copy);
-        borrow.setUser(user);
+        borrow.setClient(client);
         borrow.setBorrowDate(currentDate);
         borrow.setReturnDate(expectedReturnDate);
         return borrow;
@@ -83,23 +83,23 @@ public class BorrowService {
     }
 
     @Transactional
-    public void returnCopy(Long copyId, Long userId) {
+    public void returnCopy(Long copyId, Long clientId) {
         Copy copy = copyRepository.findById(copyId)
                 .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + copyId + " was not found."));
 
-        Client user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User with ID " + userId + " was not found."));
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ObjectNotFoundException("Client with ID " + clientId + " was not found."));
 
         LocalDate currentDate = LocalDate.now();
 
         Borrow borrow = new Borrow();
         borrow.setCopy(copy);
-        borrow.setUser(user);
+        borrow.setClient(client);
         borrow.setBorrowDate(currentDate);
 
         updateBorrowAndCopy(borrow, copy, currentDate);
         updateCopyStatus(copy, CopyStatus.AVAILABLE);
-        logUserActivity(user, copy, ActionType.RETURN, borrow.getBorrowDate(), currentDate);
+        logUserActivity(client, copy, ActionType.RETURN, borrow.getBorrowDate(), currentDate);
     }
 
     private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDate returnDate) {
@@ -109,9 +109,9 @@ public class BorrowService {
         copyRepository.save(copy);
     }
 
-    private void logUserActivity(Client user, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate returnDate) {
+    private void logUserActivity(Client client, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate returnDate) {
         ClientActivity userActivity = new ClientActivity();
-        userActivity.setUser(user);
+        userActivity.setClient(client);
         userActivity.setCopy(copy);
         userActivity.setActionType(actionType);
         userActivity.setBorrowDate(borrowDate);
@@ -121,7 +121,7 @@ public class BorrowService {
         } else {
             userActivity.setReturnDate(null);
         }
-        userActivityRepository.save(userActivity);
+        clientActivityRepository.save(userActivity);
     }
 
     public void updateCopyStatus(Copy copy, CopyStatus newStatus) {
@@ -129,8 +129,8 @@ public class BorrowService {
         copyRepository.save(copy);
     }
 
-    public List<ClientActivityDto> getBorrowHistoryForUser(Long userId) {
-        List<Borrow> borrowHistoryForUser = borrowRepository.findBorrowHistoryByUserId(userId);
+    public List<ClientActivityDto> getBorrowHistoryForUser(Long clientId) {
+        List<Borrow> borrowHistoryForUser = borrowRepository.findBorrowHistoryByClientId(clientId);
 
         if (borrowHistoryForUser.isEmpty()) {
             return Collections.emptyList();
@@ -140,14 +140,14 @@ public class BorrowService {
                 .collect(Collectors.toList());
     }
 
-    public List<CopyDto> getCurrentBorrowedCopiesForUser(Long userId) {
-        List<Copy> userBorrowed = borrowRepository.findCurrentlyBorrowedCopiesForUser(userId);
+    public List<CopyDto> getCurrentBorrowedCopiesForClient(Long clientId) {
+        List<Copy> clientBorrowed = borrowRepository.findCurrentlyBorrowedCopiesForClient(clientId);
 
-        if (userBorrowed.isEmpty()) {
+        if (clientBorrowed.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return userBorrowed.stream()
+        return clientBorrowed.stream()
                 .filter(borrow -> borrow.getReturnDate() == null)
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());

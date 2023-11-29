@@ -15,28 +15,28 @@ import com.example.libraryapi.service.ClientActivityService;
 
 import java.util.List;
 
-@Api(value = "User Activity Management System", tags = {"User Activity"})
+@Api(value = "Client Activity Management System", tags = {"Client Activity"})
 @RestController
-@RequestMapping("/user-activities")
+@RequestMapping("/client-activities")
 @RequiredArgsConstructor
 public class ClientActivityController {
     public final ClientActivityService service;
 
-    @ApiOperation(value = "Show borrow history by user id")
-    @GetMapping("/borrow-history/{userId}")
+    @ApiOperation(value = "Show borrow history by client id")
+    @GetMapping("/borrow-history/{clientId}")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
-    public ResponseEntity<List<ClientActivityDto>> getUserBorrowHistory(
-            @ApiParam(value = "User id", required = true) @PathVariable final Long userId) {
-        List<ClientActivityDto> borrowHistory = service.getUserBorrowHistory(userId);
+    public ResponseEntity<List<ClientActivityDto>> getClientBorrowHistory(
+            @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
+        List<ClientActivityDto> borrowHistory = service.getClientBorrowHistory(clientId);
         return ResponseEntity.ok(borrowHistory);
     }
 
-    @ApiOperation(value = "Show return history by user id")
-    @GetMapping("/return-history/{userId}")
+    @ApiOperation(value = "Show return history by client id")
+    @GetMapping("/return-history/{clientId}")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
-    public ResponseEntity<List<ClientActivityDto>> getUserReturnHistory(
-            @ApiParam(value = "User id", required = true) @PathVariable final Long userId) {
-        List<ClientActivityDto> returnHistory = service.getUserReturnHistory(userId);
+    public ResponseEntity<List<ClientActivityDto>> getClientReturnHistory(
+            @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
+        List<ClientActivityDto> returnHistory = service.getClientReturnHistory(clientId);
         return ResponseEntity.ok(returnHistory);
     }
 }

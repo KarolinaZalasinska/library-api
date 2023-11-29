@@ -44,8 +44,8 @@ public class Copy {
     private Book book;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Client user;
+    @JoinColumn(name = "client_id")
+    private Client client;
 
     public void setStatus(CopyStatus newStatus) {
     }

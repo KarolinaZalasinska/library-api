@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface LateFeeRepository extends JpaRepository<LateFee, Long> {
-    List<LateFee> findAllByBorrow_User_Id(Long userId);
+    List<LateFee> findAllByBorrow_Client_Id(Long clientId);
 
    // List<LateFee> findAllByAmountGreaterThan(double amount);
 
