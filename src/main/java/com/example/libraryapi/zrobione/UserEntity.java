@@ -1,4 +1,4 @@
-package com.example.libraryapi.domain;
+package com.example.libraryapi.zrobione;
 
 import com.example.libraryapi.model.Role;
 import com.example.libraryapi.users.Authority;
@@ -27,7 +27,7 @@ public class UserEntity implements UserDetails{
     @Getter
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -35,7 +35,7 @@ public class UserEntity implements UserDetails{
     )
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Authority> authorities = new HashSet<>();
 
 

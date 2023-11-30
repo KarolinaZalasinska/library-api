@@ -1,7 +1,7 @@
 package com.example.libraryapi.service;
 
-import com.example.libraryapi.db.UserEntityRepository;
-import com.example.libraryapi.domain.UserEntity;
+import com.example.libraryapi.zrobione.UserEntityRepository;
+import com.example.libraryapi.zrobione.UserEntity;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

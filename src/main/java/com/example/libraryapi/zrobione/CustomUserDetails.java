@@ -1,6 +1,6 @@
-package com.example.libraryapi.users;
+package com.example.libraryapi.zrobione;
 
-import com.example.libraryapi.domain.UserEntity;
+import com.example.libraryapi.zrobione.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,12 +19,13 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Map roles to GrantedAuthority
+        // Metoda zwraca kolekcję uprawnień.
+        // Role są mapowane na SimpleGrantedAuthority z prefiksem "ROLE_", a authorities są mapowane bezpośrednio.
+        // Te informacje są używane przez mechanizmy uwierzytelniania i autoryzacji Spring Security.
         Set<GrantedAuthority> authorities = userEntity.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toSet());
 
-        // Map authorities to GrantedAuthority
         authorities.addAll(userEntity.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
                 .collect(Collectors.toSet()));
@@ -32,6 +33,8 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
+    // Metody zwracają hasło i nazwę użytkownika.
+    // Metoda używana jest przez mechanizm uwierzytelniania do porównywania z hasłem i loginem, które użytkownik wprowadza podczas logowania.
     @Override
     public String getPassword() {
         return userEntity.getPassword();

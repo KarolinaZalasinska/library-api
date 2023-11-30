@@ -1,6 +1,6 @@
 package com.example.libraryapi.users;
 
-import com.example.libraryapi.domain.UserEntity;
+import com.example.libraryapi.zrobione.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 

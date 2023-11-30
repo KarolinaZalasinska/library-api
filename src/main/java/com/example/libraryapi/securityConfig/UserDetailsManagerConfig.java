@@ -7,14 +7,19 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
-
 import javax.sql.DataSource;
 
 @Configuration
 public class UserDetailsManagerConfig {
 
+    private final DataSource dataSource;
+
+    public UserDetailsManagerConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Bean
-    public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
+    public JdbcUserDetailsManager jdbcUserDetailsManager() {
         JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager();
         userDetailsManager.setDataSource(dataSource);
         userDetailsManager.setUsersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username = ?");
@@ -40,7 +45,6 @@ public class UserDetailsManagerConfig {
                     .roles("USER")
                     .authorities("ROLE_USER")
                     .build();
-
 
             if (!userDetailsManager.userExists(user.getUsername())) {
                 userDetailsManager.createUser(user);
