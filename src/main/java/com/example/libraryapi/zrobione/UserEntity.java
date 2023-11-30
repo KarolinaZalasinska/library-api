@@ -41,14 +41,14 @@ public class UserEntity implements UserDetails{
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities.stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                .map(authority -> new SimpleGrantedAuthority(authority.getRole()))
                 .collect(Collectors.toSet());
     }
 
-    public void addAuthority(String authority) {
+    public void addAuthority(String role) {
         Authority authorityEntity = new Authority();
         authorityEntity.setUser(this);
-        authorityEntity.setAuthority(authority);
+        authorityEntity.setRole(role);
         authorities.add(authorityEntity);
     }
 

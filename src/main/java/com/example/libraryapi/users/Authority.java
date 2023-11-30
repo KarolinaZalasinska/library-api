@@ -18,5 +18,5 @@ public class Authority {
     private UserEntity user;
 
     @Column(name = "authority_name")
-    private String authority;
+    private String role;
 }
