@@ -1,6 +1,5 @@
 package com.example.libraryapi.zrobione;
 
-import com.example.libraryapi.zrobione.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,9 +10,9 @@ import java.util.stream.Collectors;
 
 
 public class CustomUserDetails implements UserDetails {
-    private final UserEntity userEntity;
+    private final User userEntity;
 
-    public CustomUserDetails(UserEntity userEntity) {
+    public CustomUserDetails(User userEntity) {
         this.userEntity = userEntity;
     }
 

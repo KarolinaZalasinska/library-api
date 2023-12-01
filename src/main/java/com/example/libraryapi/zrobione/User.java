@@ -1,10 +1,13 @@
 package com.example.libraryapi.zrobione;
 
-import com.example.libraryapi.model.Role;
-import com.example.libraryapi.users.Authority;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,40 +19,37 @@ import java.util.stream.Collectors;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
-public class UserEntity implements UserDetails{
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Email(message = "Please provide a valid email address")
+    @NotBlank(message = "Email is required")
     private String username;
+
+    @NotBlank(message = "Password is required")
+    @Length(min = 6, message = "Password must be at least 6 characters long")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Password is not strong enough")
     private String password;
-    @Getter
+
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Authority> authorities = new HashSet<>();
-
-
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities.stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getRole()))
-                .collect(Collectors.toSet());
+    public void addRole(Role role) {
+        roles.add(role);
     }
 
-    public void addAuthority(String role) {
-        Authority authorityEntity = new Authority();
-        authorityEntity.setUser(this);
-        authorityEntity.setRole(role);
-        authorities.add(authorityEntity);
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toSet());
     }
 
     public boolean isAccountNonExpired() {
@@ -64,7 +64,4 @@ public class UserEntity implements UserDetails{
         return true;
     }
 
-    public void addRole(Role role) {
-
-    }
 }
