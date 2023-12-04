@@ -54,6 +54,7 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", "Copy is not available");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
+
     @ExceptionHandler(DuplicateBookException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ProblemDetail handleDuplicateBookException(DuplicateBookException exception) {
@@ -68,7 +69,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied." + e.getMessage());
     }
 
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<String> handleIncorrectPasswordException(IncorrectPasswordException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Incorrect password: " + e.getMessage());
+    }
 }
