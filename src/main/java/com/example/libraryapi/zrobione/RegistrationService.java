@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RegistrationService {
 
-    private final UserEntityRepository userRepository;
+    private final UserRepository userRepository;
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public RegistrationService(UserEntityRepository userRepository, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
+    public RegistrationService(UserRepository userRepository, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;

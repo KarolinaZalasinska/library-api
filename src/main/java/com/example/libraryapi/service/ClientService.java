@@ -22,16 +22,16 @@ public class ClientService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public ClientDto createClient(@Valid ClientDto userDto) {
-        Client user = modelMapper.map(userDto, Client.class);
-        Client saveUser = clientRepository.save(user);
-        return modelMapper.map(saveUser, ClientDto.class);
+    public ClientDto createClient(@Valid ClientDto clientDto) {
+        Client client = modelMapper.map(clientDto, Client.class);
+        Client saveClient = clientRepository.save(client);
+        return modelMapper.map(saveClient, ClientDto.class);
     }
 
     public ClientDto getClientById(final Long id) {
         Optional<Client> optionalUser = clientRepository.findById(id);
         return optionalUser.map(user -> modelMapper.map(user, ClientDto.class))
-                .orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
+                .orElseThrow(() -> new ObjectNotFoundException("Client with id " + id + " was not found."));
     }
 
     public List<ClientDto> getAllClients() {
@@ -46,13 +46,13 @@ public class ClientService {
     }
 
     @Transactional
-    public ClientDto updateClient(final Long id, ClientDto userDto) {
+    public ClientDto updateClient(final Long id, ClientDto clientDto) {
         return clientRepository.findById(id)
-                .map(user -> {
-                    modelMapper.map(userDto, user);
-                    Client updateUser = clientRepository.save(user);
-                    return modelMapper.map(updateUser, ClientDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
+                .map(client -> {
+                    modelMapper.map(clientDto, client);
+                    Client updateClient = clientRepository.save(client);
+                    return modelMapper.map(updateClient, ClientDto.class);
+                }).orElseThrow(() -> new ObjectNotFoundException("Client with id " + id + " was not found."));
     }
 
     @Transactional
