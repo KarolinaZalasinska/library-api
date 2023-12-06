@@ -1,5 +1,6 @@
 package com.example.libraryapi.zrobione;
 
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,17 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 // Ta klasa odpowiada za logikę rejestracji użytkowników. Przyjmuje informacje od użytkownika, sprawdza, czy użytkownik już istnieje,
 // a następnie tworzy nowego użytkownika i zapisuje go w bazie danych. Jest to odpowiedzialność związana z procesem rejestracji.
 @Service
+@AllArgsConstructor
 public class RegistrationService {
 
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
-
-    public RegistrationService(UserRepository userRepository, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Transactional
     public RegisterResponse register(String username, String password, String roleName) {

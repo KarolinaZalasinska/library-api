@@ -2,7 +2,7 @@ package com.example.libraryapi.zrobione;
 
 import com.example.libraryapi.exceptions.IncorrectPasswordException;
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
-import jakarta.validation.ValidationException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -43,34 +42,24 @@ public class UserService {
     // Metody związane z zarządzaniem użytkownikami
 
     @Transactional
-    public UserUpdateDto updateUserField(String username, Map<String, String> fieldsToUpdate) {
+    public UserUpdateDto updateUserField(String username, @Valid UserUpdateDto userUpdateDto) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ObjectNotFoundException("User with username " + username + " was not found."));
 
-        fieldsToUpdate.forEach((field, value) -> {
-            switch (field) {
-                case "username":
-                    user.setUsername(value);
-                case "password":
-                    if (!isValidPassword(value)) {
-                        throw new ValidationException("Invalid new password");
-                    }
-                    user.setPassword(passwordEncoder.encode(value));
-                    break;
+        if (userUpdateDto.newUsername() != null) {
+            user.setUsername(userUpdateDto.newUsername());
+        }
 
-                // Dodaj obsługę innych pól, jeśli to konieczne
+        if (userUpdateDto.newPassword() != null) {
+            user.setPassword(passwordEncoder.encode(userUpdateDto.newPassword()));
+        }
 
-                default:
-                    throw new IllegalArgumentException("Invalid field specified: " + field);
-            }
-        });
+        if (userUpdateDto.enabled()) {
+            user.setEnabled(true);
+        }
 
         User updatedUser = userRepository.save(user);
         return mapper.map(updatedUser, UserUpdateDto.class);
-    }
-
-    private boolean isValidPassword(String password) {
-        return password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$");
     }
 
     public void deleteUser(String username) {
