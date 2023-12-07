@@ -1,5 +1,7 @@
 package com.example.libraryapi.zrobione;
 
+import com.example.libraryapi.exceptions.RoleNotFoundException;
+import com.example.libraryapi.exceptions.reviews.UsernameAlreadyExistsException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,22 +18,22 @@ public class RegistrationService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public RegisterResponse register(String username, String password, String roleName) {
+    public RegisterResponse register(String username, String password, UserRole role) {
         if (userRepository.findByUsername(username).isPresent()) {
-            return RegisterResponse.failure("Account already exists.");
+            throw new UsernameAlreadyExistsException("Username already exists: " + username);
         }
 
-        User entity = new User();
-        entity.setUsername(username);
-        entity.setPassword(passwordEncoder.encode(password));
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
 
-        Role userRole = roleService.findRoleByName(roleName);
-        if (userRole == null) {
-            return RegisterResponse.failure("Role does not exist.");
-        }
-        entity.addRole(userRole);
+        Role userRole = roleService.findRoleByUserRole(role);
+        user.addRole(userRole);
 
-        userRepository.save(entity);
+        userRepository.save(user);
         return RegisterResponse.success();
     }
+
 }
+
+

@@ -1,10 +1,7 @@
 package com.example.libraryapi.exceptions;
 
 import com.example.libraryapi.exceptions.copies.CopyNotAvailableException;
-import com.example.libraryapi.exceptions.reviews.DuplicateBookException;
-import com.example.libraryapi.exceptions.reviews.EmptyDescriptionException;
-import com.example.libraryapi.exceptions.reviews.InvalidRatingException;
-import com.example.libraryapi.exceptions.reviews.ReviewAlreadyExistsException;
+import com.example.libraryapi.exceptions.reviews.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -78,6 +75,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIncorrectPasswordException(IncorrectPasswordException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Incorrect password: " + e.getMessage());
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
@@ -88,5 +86,15 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<String> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists: " + e.getMessage());
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

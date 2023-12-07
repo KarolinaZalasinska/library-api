@@ -1,5 +1,6 @@
 package com.example.libraryapi.zrobione;
 
+import com.example.libraryapi.exceptions.ObjectNotFoundException;
 import io.swagger.annotations.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class UserController {
     public ResponseEntity<User> getUserById(
             @ApiParam(value = "User ID", required = true) @PathVariable Long id) {
         User user = userService.getUserById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+                .orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
         return ResponseEntity.ok(user);
     }
 

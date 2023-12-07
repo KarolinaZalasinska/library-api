@@ -1,8 +1,8 @@
 package com.example.libraryapi.zrobione;
 
-import lombok.Data;
 import lombok.Getter;
 
+@Getter
 public class RegisterResponse {
 
     private final boolean success;
@@ -17,15 +17,4 @@ public class RegisterResponse {
         return new RegisterResponse(true, "Registration successful");
     }
 
-    public static RegisterResponse failure(String message) {
-        return new RegisterResponse(false, message);
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }
