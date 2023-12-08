@@ -19,19 +19,20 @@ public class UserController {
 
     @ApiOperation(value = "Get all users")
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @ApiOperation(value = "Get user by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(
+    public ResponseEntity<UserDto> getUserById(
             @ApiParam(value = "User ID", required = true) @PathVariable Long id) {
-        User user = userService.getUserById(id)
+        UserDto userDto = userService.getUserById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("User with id " + id + " was not found."));
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userDto);
     }
+
 
     @ApiOperation(value = "Check if username is available")
     @ApiResponses(value = {
@@ -52,10 +53,10 @@ public class UserController {
 
     @ApiOperation(value = "Update user field")
     @PutMapping("/{username}")
-    public ResponseEntity<UserUpdateDto> updateUserField(
+    public ResponseEntity<UserDto> updateUserField(
             @ApiParam(value = "Username", required = true) @PathVariable String username,
-            @ApiParam(value = "Updated user data", required = true) @Valid @RequestBody UserUpdateDto userUpdateDto) {
-        UserUpdateDto updatedUser = userService.updateUserField(username, userUpdateDto);
+            @ApiParam(value = "Updated user data", required = true) @Valid @RequestBody UserDto userDto) {
+        UserDto updatedUser = userService.updateUserField(username, userDto);
         return ResponseEntity.ok(updatedUser);
     }
 

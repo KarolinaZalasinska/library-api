@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -27,12 +28,16 @@ public class UserService {
 
     // Metody związane z użytkownikami
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> mapper.map(user, UserDto.class))
+                .collect(Collectors.toList());
     }
 
-    public Optional<User> getUserById(Long userId) {
-        return userRepository.findById(userId);
+    public Optional<UserDto> getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .map(user -> mapper.map(user, UserDto.class));
     }
 
     public boolean isUsernameAvailable(String username) {
@@ -42,24 +47,24 @@ public class UserService {
     // Metody związane z zarządzaniem użytkownikami
 
     @Transactional
-    public UserUpdateDto updateUserField(String username, @Valid UserUpdateDto userUpdateDto) {
+    public UserDto updateUserField(String username, @Valid UserDto userDto) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ObjectNotFoundException("User with username " + username + " was not found."));
 
-        if (userUpdateDto.newUsername() != null) {
-            user.setUsername(userUpdateDto.newUsername());
+        if (userDto.newUsername() != null) {
+            user.setUsername(userDto.newUsername());
         }
 
-        if (userUpdateDto.newPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userUpdateDto.newPassword()));
+        if (userDto.newPassword() != null) {
+            user.setPassword(passwordEncoder.encode(userDto.newPassword()));
         }
 
-        if (userUpdateDto.enabled()) {
+        if (userDto.enabled()) {
             user.setEnabled(true);
         }
 
         User updatedUser = userRepository.save(user);
-        return mapper.map(updatedUser, UserUpdateDto.class);
+        return mapper.map(updatedUser, UserDto.class);
     }
 
     public void deleteUser(String username) {
