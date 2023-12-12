@@ -11,9 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,36 +23,31 @@ public class CopyService {
 
     @Transactional
     public CopyDto createCopy(@Valid CopyDto copyDto) {
-        Copy copy = modelMapper.map(copyDto, Copy.class);
-        Copy savedCopy = copyRepository.save(copy);
-        return modelMapper.map(savedCopy, CopyDto.class);
+        Copy copy = copyRepository.save(modelMapper.map(copyDto, Copy.class));
+        return modelMapper.map(copy, CopyDto.class);
     }
 
     public CopyDto getCopyById(final Long id) {
-        Optional<Copy> optionalCopy = copyRepository.findById(id);
-        return optionalCopy.map(copy -> modelMapper.map(copy, CopyDto.class))
-                .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + id + " was not found."));
+        return copyRepository.findById(id)
+                .map(copy -> modelMapper.map(copy, CopyDto.class))
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + id + " was not found."));
     }
 
     public List<CopyDto> getAllCopies() {
-        List<Copy> copies = copyRepository.findAll();
-        if (copies.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            return copies.stream()
-                    .map(copy -> modelMapper.map(copy, CopyDto.class))
-                    .collect(Collectors.toList());
-        }
+        return copyRepository.findAll().stream()
+                .map(copy -> modelMapper.map(copy, CopyDto.class))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public CopyDto updateCopy(final Long id, @Valid CopyDto copyDto) {
-        return copyRepository.findById(id)
-                .map(copy -> {
-                    modelMapper.map(copyDto, copy);
-                    Copy updatedCopy = copyRepository.save(copy);
-                    return modelMapper.map(updatedCopy, CopyDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + id + " was not found."));
+        Copy copy = copyRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + id + " was not found."));
+
+        modelMapper.map(copyDto, copy);
+        Copy updatedCopy = copyRepository.save(copy);
+
+        return modelMapper.map(updatedCopy, CopyDto.class);
     }
 
     @Transactional
@@ -62,49 +56,44 @@ public class CopyService {
     }
 
     public List<CopyDto> getCopiesForBook(final Long bookId) {
-        List<Copy> copies = copyRepository.findByBookId(bookId);
-        return copies.stream()
+        return copyRepository.findByBookId(bookId).stream()
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());
     }
 
-    public List<CopyDto> getAvailableCopiesNow() {
-        List<Copy> availableCopies = copyRepository.findAvailableCopies(LocalDate.now());
-        return availableCopies.stream()
+    public Set<CopyDto> getAvailableCopiesNow() {
+        return copyRepository.findAvailableCopies(LocalDate.now()).stream()
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
+
 
     public List<CopyDto> getAvailableCopiesForBook(final Long bookId) {
-        List<Copy> copies = copyRepository.findAvailableCopiesForBook(bookId, LocalDate.now());
-        return copies.stream()
+        return copyRepository.findAvailableCopiesForBook(bookId, LocalDate.now()).stream()
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());
     }
 
     public List<CopyDto> getBorrowedCopiesForClient(final Long clientId) {
-        List<Copy> copies = copyRepository.findBorrowedCopiesByClientId(clientId);
-        return copies.stream()
+        return copyRepository.findBorrowedCopiesByClientId(clientId).stream()
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());
     }
 
     public List<CopyDto> getOverdueCopies() {
-        List<Copy> copies = copyRepository.findOverdueCopies(LocalDate.now());
-        return copies.stream()
+        return copyRepository.findOverdueCopies(LocalDate.now()).stream()
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());
     }
 
     public CopyDto getCopyDetails(final Long id) {
-        Optional<Copy> copyOptional = copyRepository.findById(id);
-        return copyOptional.map(copy -> modelMapper.map(copy, CopyDto.class))
-                .orElseThrow(() -> new ObjectNotFoundException("Copy with ID " + id + " was not found."));
+        return copyRepository.findById(id)
+                .map(copy -> modelMapper.map(copy, CopyDto.class))
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + id + " was not found."));
     }
 
     public List<CopyDto> getCurrentlyBorrowedCopies() {
-        List<Copy> currentlyBorrowedCopies = copyRepository.findCurrentlyBorrowedCopies(LocalDate.now());
-        return currentlyBorrowedCopies.stream()
+        return copyRepository.findCurrentlyBorrowedCopies(LocalDate.now()).stream()
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());
     }

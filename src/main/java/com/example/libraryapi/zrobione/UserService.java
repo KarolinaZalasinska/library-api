@@ -2,6 +2,7 @@ package com.example.libraryapi.zrobione;
 
 import com.example.libraryapi.exceptions.IncorrectPasswordException;
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
+import com.example.libraryapi.users.User;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;

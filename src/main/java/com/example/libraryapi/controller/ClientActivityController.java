@@ -17,23 +17,23 @@ import java.util.List;
 
 @Api(value = "Client Activity Management System", tags = {"Client Activity"})
 @RestController
-@RequestMapping("/client-activities")
 @RequiredArgsConstructor
+@RequestMapping("/client-activities")
 public class ClientActivityController {
     public final ClientActivityService service;
 
-    @ApiOperation(value = "Show borrow history by client id")
     @GetMapping("/borrow-history/{clientId}")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Show borrow history by client id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getClientBorrowHistory(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
         List<ClientActivityDto> borrowHistory = service.getClientBorrowHistory(clientId);
         return ResponseEntity.ok(borrowHistory);
     }
 
-    @ApiOperation(value = "Show return history by client id")
     @GetMapping("/return-history/{clientId}")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Show return history by client id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getClientReturnHistory(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
         List<ClientActivityDto> returnHistory = service.getClientReturnHistory(clientId);

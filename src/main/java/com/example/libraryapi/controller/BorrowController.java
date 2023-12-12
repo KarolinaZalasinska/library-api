@@ -3,6 +3,7 @@ package com.example.libraryapi.controller;
 import com.example.libraryapi.dto.CopyDto;
 import com.example.libraryapi.dto.ClientActivityDto;
 import com.example.libraryapi.exceptions.copies.CopyNotAvailableException;
+import com.example.libraryapi.model.Copy;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,50 +23,53 @@ import java.util.List;
 public class BorrowController {
     private final BorrowService service;
 
-    @ApiOperation(value = "Borrow a copy")
     @PostMapping("/borrow")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Borrow copy")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> borrowCopy(
             @ApiParam(value = "Copy id", required = true) @RequestParam final Long copyId,
-            @ApiParam(value = "User id", required = true) @RequestParam final Long userId) {
-        service.borrowCopy(copyId, userId);
+            @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
+        service.borrowCopy(copyId, clientId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @ApiOperation(value = "Return a copy")
     @PostMapping("/return")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Return copy")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> returnCopy(
             @ApiParam(value = "Copy id", required = true) @RequestParam final Long copyId,
-            @ApiParam(value = "User id", required = true) @RequestParam final Long userId) {
-        service.returnCopy(copyId, userId);
+            @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
+        service.returnCopy(copyId, clientId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @ApiOperation(value = "Get borrow history for a user")
-    @GetMapping("/history")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @GetMapping("/client-history")
+    @ApiOperation(value = "Get borrow history for client")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getBorrowHistoryForUser(
-            @ApiParam(value = "User id", required = true) @RequestParam final Long userId) {
+            @ApiParam(value = "Client id", required = true) @RequestParam final Long userId) {
         List<ClientActivityDto> borrowHistory = service.getBorrowHistoryForUser(userId);
         return ResponseEntity.ok(borrowHistory);
     }
 
-    @ApiOperation(value = "Check copy availability")
     @GetMapping("/availability")
+    @ApiOperation(value = "Check copy availability")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Object> isCopyAvailable(
             @ApiParam(value = "Copy id", required = true) @RequestParam final Long copyId) {
         try {
-            boolean copyAvailable = service.isCopyAvailable(copyId);
+            Copy copy = service.findCopyById(copyId);
+            boolean copyAvailable = service.isCopyAvailable(copy);
             return ResponseEntity.ok(copyAvailable);
         } catch (CopyNotAvailableException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Copy is not available");
         }
     }
 
+
+    @GetMapping
     @ApiOperation(value = "Get current borrowed copies for client")
-    @GetMapping()
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getCurrentBorrowedCopiesForClient(
             @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
         List<CopyDto> currentBorrowedCopiesForClient = service.getCurrentBorrowedCopiesForClient(clientId);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.CopyService;
 
 import java.util.List;
+import java.util.Set;
 
 @Api(value = "Copy Management System", tags = {"Copy"})
 @RestController
@@ -20,33 +21,35 @@ import java.util.List;
 public class CopyController {
     private final CopyService service;
 
-    @ApiOperation("Create a new copy")
-    @PostMapping()
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @PostMapping
+    @ApiOperation("Create new copy")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<CopyDto> createCopy(
             @ApiParam(value = "Provide copy data to create a new copy", required = true) @RequestBody CopyDto copyDto) {
         CopyDto createdCopy = service.createCopy(copyDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCopy);
     }
 
-    @ApiOperation("Get a copy by id")
     @GetMapping("/{id}")
+    @ApiOperation("Get copy by id")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CopyDto> getCopyById(
             @ApiParam(value = "Copy id", required = true) @PathVariable final Long id) {
         CopyDto copyDto = service.getCopyById(id);
         return ResponseEntity.ok(copyDto);
     }
 
+    @GetMapping
     @ApiOperation("Get all copies")
-    @GetMapping()
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<CopyDto>> getAllCopies() {
         List<CopyDto> copies = service.getAllCopies();
         return ResponseEntity.ok(copies);
     }
 
-    @ApiOperation("Update a copy by id")
     @PutMapping("/{id}")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation("Update copy by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<CopyDto> updateCopy(
             @ApiParam(value = "Copy id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Updated copy data", required = true) @RequestBody CopyDto copyDto) {
@@ -54,71 +57,77 @@ public class CopyController {
         return ResponseEntity.ok(updatedCopy);
     }
 
-    @ApiOperation("Delete a copy by id")
     @DeleteMapping("/{id}")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation("Delete copy by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteCopy(
             @ApiParam(value = "Copy id", required = true) @PathVariable final Long id) {
         service.deleteCopy(id);
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation("Get available copies now")
     @GetMapping("/available-now")
-    public ResponseEntity<List<CopyDto>> getAvailableCopiesNow() {
-        List<CopyDto> availableCopiesNow = service.getAvailableCopiesNow();
+    @ApiOperation("Get available copies now")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Set<CopyDto>> getAvailableCopiesNow() {
+        Set<CopyDto> availableCopiesNow = service.getAvailableCopiesNow();
         return ResponseEntity.ok(availableCopiesNow);
     }
 
-    @ApiOperation("Get copies for a specific book")
+
     @GetMapping("/for-book")
+    @ApiOperation("Get all copies for the book with the given id")
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name()) or " +
+            "hasAuthority(T(com.example.libraryapi.users.UserRole).USER.name()))")
     public ResponseEntity<List<CopyDto>> getCopiesForBook(
-            @ApiParam(value = "Book id", required = true) @RequestParam Long bookId) {
+            @ApiParam(value = "Book id", required = true) @RequestParam final Long bookId) {
         List<CopyDto> copiesForBook = service.getCopiesForBook(bookId);
         return ResponseEntity.ok(copiesForBook);
     }
 
-
-    @ApiOperation("Get available copies for a specific book")
     @GetMapping("/available-for-book")
+    @ApiOperation("Get available copies for a specific book")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<CopyDto>> getAvailableCopiesForBook(
-            @ApiParam(value = "Book id", required = true) @RequestParam Long bookId) {
+            @ApiParam(value = "Book id", required = true) @RequestParam final Long bookId) {
         List<CopyDto> availableCopiesForBook = service.getAvailableCopiesForBook(bookId);
         return ResponseEntity.ok(availableCopiesForBook);
     }
 
-    @ApiOperation("Get borrowed copies for a specific client")
     @GetMapping("/borrowed-for-client")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation("Get borrowed copies for a specific client")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getBorrowedCopiesForClient(
-            @ApiParam(value = "Client id", required = true) @RequestParam Long clientId) {
-        List<CopyDto> borrowedCopiesForUser = service.getBorrowedCopiesForClient(clientId);
-        return ResponseEntity.ok(borrowedCopiesForUser);
+            @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
+        List<CopyDto> borrowedCopiesForClient = service.getBorrowedCopiesForClient(clientId);
+        return ResponseEntity.ok(borrowedCopiesForClient);
     }
 
-    @ApiOperation("Get overdue copies")
     @GetMapping("/overdue")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation("Get overdue copies")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getOverdueCopies() {
         List<CopyDto> overdueCopies = service.getOverdueCopies();
         return ResponseEntity.ok(overdueCopies);
     }
 
-    @ApiOperation("Get copy details by ID")
     @GetMapping("/details/{id}")
+    @ApiOperation("Get copy details by id")
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name()) or " +
+            "hasAuthority(T(com.example.libraryapi.users.UserRole).USER.name()))")
     public ResponseEntity<CopyDto> getCopyDetails(
-            @ApiParam(value = "Copy id", required = true) @PathVariable Long id) {
+            @ApiParam(value = "Copy id", required = true) @PathVariable final Long id) {
         CopyDto copyDetails = service.getCopyDetails(id);
         return ResponseEntity.ok(copyDetails);
     }
 
-    @ApiOperation("Get currently borrowed copies")
     @GetMapping("/currently-borrowed")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation("Get currently borrowed copies")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getCurrentlyBorrowedCopies() {
         List<CopyDto> currentlyBorrowedCopies = service.getCurrentlyBorrowedCopies();
         return ResponseEntity.ok(currentlyBorrowedCopies);
     }
-
-
 }

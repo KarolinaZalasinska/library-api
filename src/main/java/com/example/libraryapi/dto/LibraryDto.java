@@ -13,7 +13,7 @@ public record LibraryDto(
         @NotBlank(message = "Library address is required.")
         String address,
 
-        @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Invalid postal code format.")
+        @Pattern(regexp = "^[0-9]{2}-[0-9]{3}$", message = "Postal code should have the format XX-XXX.")
         String postalCode,
 
         List<Long> bookIds

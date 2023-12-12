@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.libraryapi.repository.BookRepository;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,39 +22,33 @@ public class BookService {
 
     @Transactional
     public BookDto createBook(@Valid BookDto bookDto) {
-        Book book = modelMapper.map(bookDto, Book.class);
-        Book savedBook = repository.save(book);
-        return modelMapper.map(savedBook, BookDto.class);
+        Book book = repository.save(modelMapper.map(bookDto, Book.class));
+        return modelMapper.map(book, BookDto.class);
     }
 
     public BookDto getBookById(final Long id) {
-        Optional<Book> optionalBook = repository.findById(id);
-        return optionalBook.map(book -> modelMapper.map(book, BookDto.class))
-                .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + id + " was not found."));
+        return repository.findById(id)
+                .map(book -> modelMapper.map(book, BookDto.class))
+                .orElseThrow(() -> new ObjectNotFoundException("Book with id " + id + " was not found."));
     }
 
     public List<BookDto> getAllBooks() {
-        List<Book> books = repository.findAll();
-
-        if (books.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            return books.stream()
-                    .map(book -> modelMapper.map(book, BookDto.class))
-                    .collect(Collectors.toList());
-        }
+        return repository.findAll().stream()
+                .map(book -> modelMapper.map(book, BookDto.class))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public BookDto updateBook(final Long id, @Valid BookDto bookDto) {
-        return repository.findById(id)
-                .map(book -> {
-                    modelMapper.map(bookDto, book);
-                    Book updatedBook = repository.save(book);
-                    return modelMapper.map(updatedBook, BookDto.class);
-                })
-                .orElseThrow(() -> new ObjectNotFoundException("Book with ID " + id + " was not found."));
+        Book book = repository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Book with id " + id + " was not found."));
+
+        modelMapper.map(bookDto, book);
+        Book updatedBook = repository.save(book);
+
+        return modelMapper.map(updatedBook, BookDto.class);
     }
+
 
     @Transactional
     public void deleteBook(final Long id) {

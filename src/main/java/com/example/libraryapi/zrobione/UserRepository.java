@@ -1,5 +1,6 @@
 package com.example.libraryapi.zrobione;
 
+import com.example.libraryapi.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

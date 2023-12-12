@@ -16,6 +16,7 @@ import com.example.libraryapi.repository.LibraryRepository;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,35 +50,28 @@ public class LibraryService {
         }
     }
 
-    @Transactional
-    public LibraryDto updateLibrary(final Long id, @Valid LibraryDto libraryDto) {
-        return libraryRepository.findById(id)
-                .map(library -> {
-                    modelMapper.map(libraryDto, library);
-                    Library updatedLibrary = libraryRepository.save(library);
-                    return modelMapper.map(updatedLibrary, LibraryDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundException("Library with ID " + id + " was not found."));
+    public Library updateLibrary(Long id, Map<String, String> fieldsToUpdate) {
+        Library library = libraryRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Library with id " + id + " was not found."));
+
+        Map<String, BiConsumer<Library, String>> fieldSetters = Map.of(
+                "name", Library::setName,
+                "address", Library::setAddress,
+                "postalCode", Library::setPostalCode
+        );
+
+        for (Map.Entry<String, String> entry : fieldsToUpdate.entrySet()) {
+            String field = entry.getKey();
+            String value = entry.getValue();
+
+            fieldSetters.getOrDefault(field, (lib, val) -> {
+                throw new IllegalArgumentException("Invalid field specified: " + field);
+            }).accept(library, value);
+        }
+
+        return libraryRepository.save(library);
     }
 
-    @Transactional
-    public LibraryDto updateLibraryField(final Long id, final Map<String, String> fieldsToUpdate) {
-        return libraryRepository.findById(id)
-                .map(library -> {
-                    for (Map.Entry<String, String> entry : fieldsToUpdate.entrySet()) {
-                        String field = entry.getKey();
-                        String value = entry.getValue();
-
-                        switch (field) {
-                            case "name" -> library.setName(value);
-                            case "address" -> library.setAddress(value);
-                            case "postalCode" -> library.setPostalCode(value);
-                            default -> throw new IllegalArgumentException("Invalid field specified: " + field);
-                        }
-                    }
-                    Library updatedLibrary = libraryRepository.save(library);
-                    return modelMapper.map(updatedLibrary, LibraryDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundException("Library with ID " + id + " was not found."));
-    }
 
     @Transactional
     public void deleteLibrary(final Long id) {

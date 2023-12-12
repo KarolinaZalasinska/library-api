@@ -21,35 +21,35 @@ import java.util.List;
 public class PublisherController {
     private final PublisherService publisherService;
 
-    @ApiOperation(value = "Create a new publisher")
     @PostMapping
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Create new publisher")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<PublisherDto> createPublisher(
             @ApiParam(value = "Publisher details", required = true) @Valid @RequestBody PublisherDto publisherDto) {
         PublisherDto createdPublisher = publisherService.createPublisher(publisherDto);
         return ResponseEntity.ok(createdPublisher);
     }
 
-    @ApiOperation(value = "Get publisher by id")
     @GetMapping("/{id}")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Get publisher by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<PublisherDto> getPublisherById(
-            @ApiParam(value = "Publisher ID", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id) {
         PublisherDto publisherDto = publisherService.getPublisherById(id);
         return ResponseEntity.ok(publisherDto);
     }
 
-    @ApiOperation(value = "Get all publishers")
     @GetMapping
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Get all publishers")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<PublisherDto>> getAllPublishers() {
         List<PublisherDto> publishers = publisherService.getAllPublishers();
         return ResponseEntity.ok(publishers);
     }
 
-    @ApiOperation(value = "Update publisher by id")
     @PutMapping("/{id}")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Update publisher by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<PublisherDto> updatePublisher(
             @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Updated publisher data", required = true) @Valid @RequestBody PublisherDto publisherDto) {
@@ -57,19 +57,20 @@ public class PublisherController {
         return ResponseEntity.ok(updatedPublisher);
     }
 
-    @ApiOperation(value = "Delete publisher by id")
     @DeleteMapping("/{id}")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Delete publisher by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deletePublisher(
-            @ApiParam(value = "Publisher id", required = true) @PathVariable Long id) {
+            @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id) {
         publisherService.deletePublisher(id);
         return ResponseEntity.noContent().build();
     }
-    @ApiOperation(value = "Get books by publisher id")
+
     @GetMapping("/{id}/books")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Get books by publisher id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<BookDto>> getBooksByPublisher(
-            @ApiParam(value = "Publisher id", required = true) @PathVariable Long id) {
+            @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id) {
         List<BookDto> books = publisherService.getBooksByPublisher(id);
         return ResponseEntity.ok(books);
     }

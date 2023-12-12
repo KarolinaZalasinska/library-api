@@ -1,5 +1,6 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.users;
 
+import com.example.libraryapi.zrobione.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

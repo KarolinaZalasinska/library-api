@@ -4,6 +4,7 @@ import com.example.libraryapi.dto.BookDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,46 +22,47 @@ import java.util.List;
 public class BookController {
     private final BookService bookService;
 
-    @ApiOperation(value = "Create a new book")
     @PostMapping
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    @ApiOperation(value = "Create new book")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    public ResponseEntity<BookDto> createBook(
+            @ApiParam(value = "Book data", required = true) @Valid @RequestBody BookDto bookDto) {
         BookDto createdBook = bookService.createBook(bookDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get a book by ID")
-    //@PreAuthorize - po zalogowaniu przez użytkowników i adminów
+    @ApiOperation(value = "Get book by id")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<BookDto> getBookById(
-            @ApiParam(value = "Book ID", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Book id", required = true) @PathVariable final Long id) {
         BookDto bookDto = bookService.getBookById(id);
         return ResponseEntity.ok(bookDto);
     }
 
     @GetMapping
     @ApiOperation(value = "Get all books")
-    //wszyscy
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<BookDto>> getAllBooks() {
         List<BookDto> books = bookService.getAllBooks();
         return ResponseEntity.ok(books);
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update a book by ID")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Update book by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<BookDto> updateBook(
-            @ApiParam(value = "Book ID", required = true) @PathVariable Long id,
-            @ApiParam(value = "Updated book data", required = true) @RequestBody BookDto bookDto) {
+            @ApiParam(value = "Book id", required = true) @PathVariable final Long id,
+            @ApiParam(value = "Updated book data", required = true) @Valid @RequestBody BookDto bookDto) {
         BookDto updatedBook = bookService.updateBook(id, bookDto);
         return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete a book by ID")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.model.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Delete book by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteBook(
-            @ApiParam(value = "Book ID", required = true) @PathVariable Long id) {
+            @ApiParam(value = "Book id", required = true) @PathVariable final Long id) {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }

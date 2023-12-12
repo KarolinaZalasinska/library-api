@@ -5,9 +5,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import javax.sql.DataSource;
 
@@ -25,7 +28,8 @@ public class SecurityConfig {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // configure zajmuje się konfiguracją samego mechanizmu uwierzytelniania w kontekście Spring Security
+    // configure Odpowiada za konfigurację mechanizmu uwierzytelniania w Spring Security.
+    // Zdefiniowane są w nim zapytania (Query) do bazy danych w celu pobrania informacji o użytkowniku i jego rolach.
     @Autowired
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
@@ -43,4 +47,5 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
+
 }

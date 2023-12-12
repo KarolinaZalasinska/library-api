@@ -20,7 +20,7 @@ public class UserDetailsManagerConfig {
         this.dataSource = dataSource;
     }
 
-    // jdbcUserDetailsManager zajmuje się konfiguracją dostępu do danych użytkowników przechowywanych w bazie danych
+    // jdbcUserDetailsManager zajmuje się konfiguracją dostępu (zarządzaniem) do danych użytkowników przechowywanych w bazie danych
     @Bean
     public JdbcUserDetailsManager jdbcUserDetailsManager() {
         JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager();

@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.CategoryService;
 
@@ -19,42 +20,47 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService service;
 
-    @ApiOperation("Create a new category")
-    @PostMapping()
+    @PostMapping
+    @ApiOperation("Create new category")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<CategoryDto> createCategory(
             @ApiParam(value = "Provide category data to create a new category", required = true) @RequestBody CategoryDto categoryDto) {
         CategoryDto createdCategory = service.createCategory(categoryDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 
-    @ApiOperation("Get a category by ID")
     @GetMapping("/{id}")
+    @ApiOperation("Get category by id")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<CategoryDto> getCategoryById(
-            @ApiParam(value = "ID of the category", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Category id", required = true) @PathVariable final Long id) {
         CategoryDto categoryDto = service.getCategoryById(id);
         return ResponseEntity.ok(categoryDto);
     }
 
+    @GetMapping
     @ApiOperation("Get all categories")
-    @GetMapping()
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         List<CategoryDto> categories = service.getAllCategories();
         return ResponseEntity.ok(categories);
     }
 
-    @ApiOperation("Update a category by ID")
     @PutMapping("/{id}")
+    @ApiOperation("Update a category by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<CategoryDto> updateCategory(
-            @ApiParam(value = "ID of the category", required = true) @PathVariable final Long id,
+            @ApiParam(value = "Category id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Update category data", required = true) @RequestBody CategoryDto categoryDto) {
         CategoryDto updatedCategory = service.updateCategory(id, categoryDto);
         return ResponseEntity.ok(updatedCategory);
     }
 
-    @ApiOperation("Delete a category by ID")
     @DeleteMapping("/{id}")
+    @ApiOperation("Delete a category by id")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteCategory(
-            @ApiParam(value = "ID of the category", required = true) @PathVariable final Long id) {
+            @ApiParam(value = "Category id", required = true) @PathVariable final Long id) {
         service.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }

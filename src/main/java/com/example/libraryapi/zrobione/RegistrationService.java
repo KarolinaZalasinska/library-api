@@ -1,7 +1,8 @@
 package com.example.libraryapi.zrobione;
 
-import com.example.libraryapi.exceptions.RoleNotFoundException;
 import com.example.libraryapi.exceptions.reviews.UsernameAlreadyExistsException;
+import com.example.libraryapi.users.User;
+import com.example.libraryapi.users.UserRole;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

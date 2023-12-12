@@ -1,5 +1,6 @@
 package com.example.libraryapi.zrobione;
 
+import com.example.libraryapi.users.UserRole;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
