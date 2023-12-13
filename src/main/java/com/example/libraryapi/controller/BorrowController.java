@@ -47,8 +47,8 @@ public class BorrowController {
     @ApiOperation(value = "Get borrow history for client")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getBorrowHistoryForUser(
-            @ApiParam(value = "Client id", required = true) @RequestParam final Long userId) {
-        List<ClientActivityDto> borrowHistory = service.getBorrowHistoryForUser(userId);
+            @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
+        List<ClientActivityDto> borrowHistory = service.getBorrowHistoryForClient(clientId);
         return ResponseEntity.ok(borrowHistory);
     }
 

@@ -10,9 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.libraryapi.repository.ClientRepository;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,36 +21,31 @@ public class ClientService {
 
     @Transactional
     public ClientDto createClient(@Valid ClientDto clientDto) {
-        Client client = modelMapper.map(clientDto, Client.class);
-        Client saveClient = clientRepository.save(client);
-        return modelMapper.map(saveClient, ClientDto.class);
+        Client newClient = clientRepository.save(modelMapper.map(clientDto, Client.class));
+        return modelMapper.map(newClient, ClientDto.class);
     }
 
     public ClientDto getClientById(final Long id) {
-        Optional<Client> optionalUser = clientRepository.findById(id);
-        return optionalUser.map(user -> modelMapper.map(user, ClientDto.class))
+        return clientRepository.findById(id)
+                .map(client -> modelMapper.map(client, ClientDto.class))
                 .orElseThrow(() -> new ObjectNotFoundException("Client with id " + id + " was not found."));
     }
 
     public List<ClientDto> getAllClients() {
-        List<Client> users = clientRepository.findAll();
-        if (users.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            return users.stream()
-                    .map(user -> modelMapper.map(user, ClientDto.class))
-                    .collect(Collectors.toList());
-        }
+        return clientRepository.findAll().stream()
+                .map(client -> modelMapper.map(client, ClientDto.class))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public ClientDto updateClient(final Long id, ClientDto clientDto) {
-        return clientRepository.findById(id)
-                .map(client -> {
-                    modelMapper.map(clientDto, client);
-                    Client updateClient = clientRepository.save(client);
-                    return modelMapper.map(updateClient, ClientDto.class);
-                }).orElseThrow(() -> new ObjectNotFoundException("Client with id " + id + " was not found."));
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Client with id " + id + " was not found."));
+
+        modelMapper.map(clientDto, client);
+        Client updatedClient = clientRepository.save(client);
+
+        return modelMapper.map(updatedClient, ClientDto.class);
     }
 
     @Transactional

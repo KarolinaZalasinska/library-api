@@ -28,15 +28,14 @@ public class LibraryService {
 
     @Transactional
     public LibraryDto createLibrary(@Valid LibraryDto libraryDto) {
-        Library library = modelMapper.map(libraryDto, Library.class);
-        Library savedLibrary = libraryRepository.save(library);
-        return modelMapper.map(savedLibrary, LibraryDto.class);
+        Library newLibrary = libraryRepository.save(modelMapper.map(libraryDto, Library.class));
+        return modelMapper.map(newLibrary, LibraryDto.class);
     }
 
     public LibraryDto getLibraryById(final Long id) {
         Optional<Library> optionalLibrary = libraryRepository.findById(id);
         return optionalLibrary.map(library -> modelMapper.map(library, LibraryDto.class))
-                .orElseThrow(() -> new ObjectNotFoundException("Library with ID " + id + " was not found."));
+                .orElseThrow(() -> new ObjectNotFoundException("Library with id " + id + " was not found."));
     }
 
     public List<LibraryDto> getAllLibraries() {

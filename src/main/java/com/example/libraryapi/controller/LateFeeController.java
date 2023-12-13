@@ -5,7 +5,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,7 @@ public class LateFeeController {
     public ResponseEntity<LateFeeDto> createNewLateFee(
             @ApiParam(value = "Provide late fee data to create a new late fee", required = true) @Valid @RequestBody LateFeeDto lateFeeDto) {
         LateFeeDto createdLateFee = service.createLateFee(lateFeeDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdLateFee);
+        return ResponseEntity.ok(createdLateFee);
     }
 
     @GetMapping("/{lateFeeId}")
@@ -75,17 +74,16 @@ public class LateFeeController {
             "hasAuthority(T(com.example.libraryapi.users.UserRole).USER.name()))")
     public ResponseEntity<List<LateFeeDto>> getLateFeesByBorrowId(
             @ApiParam(value = "Borrow id", required = true) @PathVariable final Long borrowId) {
-        List<LateFeeDto> lateFees = service.getLateFeesByBorrowID(borrowId);
+        List<LateFeeDto> lateFees = service.getLateFeesByBorrowId(borrowId);
         return ResponseEntity.ok(lateFees);
     }
 
-    @PostMapping("/handle-late-return")
+    @PostMapping("/handle-late-return/{borrowId}")
     @ApiOperation("Handle late returns and calculate late fees")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Optional<LateFeeDto>> handleLateReturn(
-            @ApiParam(value = "Borrow id", required = true) @RequestParam final Long borrowId) {
+            @ApiParam(value = "Borrow id", required = true) @PathVariable final Long borrowId) {
         Optional<LateFeeDto> lateFeeDto = service.calculateAndRecordLateFee(borrowId);
         return ResponseEntity.ok(lateFeeDto);
     }
-
 }

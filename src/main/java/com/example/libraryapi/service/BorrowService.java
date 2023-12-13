@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/**
+ * Service for managing borrows, copies, and client activities.
+ */
 @Service
 @RequiredArgsConstructor
 public class BorrowService {
@@ -27,6 +29,13 @@ public class BorrowService {
     private final ClientActivityRepository clientActivityRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * Borrow a copy for a given client.
+     *
+     * @param copyId   The identifier of the copy to be borrowed.
+     * @param clientId The identifier of the client borrowing the copy.
+     * @throws CopyNotAvailableException if the copy is not available for borrowing.
+     */
     @Transactional
     public void borrowCopy(Long copyId, Long clientId) {
         Copy copy = findCopyById(copyId);
@@ -44,6 +53,14 @@ public class BorrowService {
         logUserActivity(client, copy, ActionType.BORROW, currentDate, null);
     }
 
+    /**
+     * Create a borrow record for a given copy, client, and current date.
+     *
+     * @param copy        The copy being borrowed.
+     * @param client      The client borrowing the copy.
+     * @param currentDate The current date.
+     * @return The created Borrow record.
+     */
     @Transactional
     public Borrow createBorrowRecord(Copy copy, Client client, LocalDate currentDate) {
         LocalDate expectedReturnDate = currentDate.plusDays(30);
@@ -60,11 +77,24 @@ public class BorrowService {
         copyRepository.save(copy);
     }
 
+    /**
+     * Check if a copy is available for borrowing.
+     *
+     * @param copy The copy to be checked.
+     * @return True if the copy is available, false otherwise.
+     */
     public boolean isCopyAvailable(Copy copy) {
         LocalDate currentDate = LocalDate.now();
         return copy.getReturnDate() == null || copy.getReturnDate().isBefore(currentDate);
     }
 
+    /**
+     * Retrieve a copy by its identifier.
+     *
+     * @param copyId The identifier of the copy.
+     * @return The Copy associated with the given copyId.
+     * @throws ObjectNotFoundException if the copy is not found.
+     */
     public Copy findCopyById(Long copyId) {
         return copyRepository.findById(copyId)
                 .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + copyId + " was not found."));
@@ -75,6 +105,13 @@ public class BorrowService {
                 .orElseThrow(() -> new ObjectNotFoundException("Client with id " + clientId + " was not found."));
     }
 
+    /**
+     * Return a borrowed copy for a given client.
+     *
+     * @param copyId   The identifier of the copy to be returned.
+     * @param clientId The identifier of the client returning the copy.
+     * @throws ObjectNotFoundException if no active borrow record is found for the copy and client.
+     */
     @Transactional
     public void returnCopy(Long copyId, Long clientId) {
         Copy copy = findCopyById(copyId);
@@ -103,6 +140,15 @@ public class BorrowService {
         }
     }
 
+    /**
+     * Log user activity such as borrow or return.
+     *
+     * @param client      The client involved in the activity.
+     * @param copy        The copy involved in the activity.
+     * @param actionType  The type of action (BORROW or RETURN).
+     * @param borrowDate  The date of borrowing.
+     * @param returnDate  The date of returning.
+     */
     @Transactional
     public void logUserActivity(Client client, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate
             returnDate) {
@@ -116,19 +162,37 @@ public class BorrowService {
         clientActivityRepository.save(clientActivity);
     }
 
+    /**
+     * Update the status of a copy.
+     *
+     * @param copy      The copy to be updated.
+     * @param newStatus The new status for the copy.
+     */
     public void updateCopyStatus(Copy copy, CopyStatus newStatus) {
         copy.setStatus(newStatus);
         copyRepository.save(copy);
     }
 
-    public List<ClientActivityDto> getBorrowHistoryForUser(Long clientId) {
-        List<Borrow> borrowHistoryForUser = borrowRepository.findBorrowHistoryByClientId(clientId);
+    /**
+     * Get the borrow history for a specific client.
+     *
+     * @param clientId The identifier of the client.
+     * @return A list of ClientActivityDto representing the borrow history for the client.
+     */
+    public List<ClientActivityDto> getBorrowHistoryForClient(Long clientId) {
+        List<Borrow> borrowHistoryForClient = borrowRepository.findBorrowHistoryByClientId(clientId);
 
-        return borrowHistoryForUser.stream()
+        return borrowHistoryForClient.stream()
                 .map(borrow -> modelMapper.map(borrow, ClientActivityDto.class))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get currently borrowed copies for a specific client.
+     *
+     * @param clientId The identifier of the client.
+     * @return A list of CopyDto representing currently borrowed copies for the client.
+     */
     public List<CopyDto> getCurrentBorrowedCopiesForClient(Long clientId) {
         List<Copy> clientBorrowed = borrowRepository.findCurrentlyBorrowedCopiesForClient(clientId);
 

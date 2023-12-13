@@ -23,8 +23,8 @@ public class CopyService {
 
     @Transactional
     public CopyDto createCopy(@Valid CopyDto copyDto) {
-        Copy copy = copyRepository.save(modelMapper.map(copyDto, Copy.class));
-        return modelMapper.map(copy, CopyDto.class);
+        Copy newCopy = copyRepository.save(modelMapper.map(copyDto, Copy.class));
+        return modelMapper.map(newCopy, CopyDto.class);
     }
 
     public CopyDto getCopyById(final Long id) {

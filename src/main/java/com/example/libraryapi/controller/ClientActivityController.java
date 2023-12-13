@@ -1,6 +1,7 @@
 package com.example.libraryapi.controller;
 
 import com.example.libraryapi.dto.ClientActivityDto;
+import com.example.libraryapi.model.ActionType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -20,23 +21,24 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/client-activities")
 public class ClientActivityController {
-    public final ClientActivityService service;
 
-    @GetMapping("/borrow-history/{clientId}")
+    private final ClientActivityService clientActivityService;
+
+    @GetMapping("/history/{clientId}/borrow")
     @ApiOperation(value = "Show borrow history by client id")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getClientBorrowHistory(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
-        List<ClientActivityDto> borrowHistory = service.getClientBorrowHistory(clientId);
+        List<ClientActivityDto> borrowHistory = clientActivityService.getClientActivityHistory(clientId, ActionType.BORROW);
         return ResponseEntity.ok(borrowHistory);
     }
 
-    @GetMapping("/return-history/{clientId}")
+    @GetMapping("/history/{clientId}/return")
     @ApiOperation(value = "Show return history by client id")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getClientReturnHistory(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
-        List<ClientActivityDto> returnHistory = service.getClientReturnHistory(clientId);
+        List<ClientActivityDto> returnHistory = clientActivityService.getClientActivityHistory(clientId, ActionType.RETURN);
         return ResponseEntity.ok(returnHistory);
     }
 }
