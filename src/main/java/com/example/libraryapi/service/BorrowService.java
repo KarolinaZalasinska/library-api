@@ -17,8 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
 /**
- * Service for managing borrows, copies, and client activities.
+ * Service class for managing borrows, copies, and client activities.
  */
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class BorrowService {
      *
      * @param copyId   The identifier of the copy to be borrowed.
      * @param clientId The identifier of the client borrowing the copy.
+     * @throws ObjectNotFoundException   if either the copy or the client is not found.
      * @throws CopyNotAvailableException if the copy is not available for borrowing.
      */
     @Transactional
@@ -89,23 +91,6 @@ public class BorrowService {
     }
 
     /**
-     * Retrieve a copy by its identifier.
-     *
-     * @param copyId The identifier of the copy.
-     * @return The Copy associated with the given copyId.
-     * @throws ObjectNotFoundException if the copy is not found.
-     */
-    public Copy findCopyById(Long copyId) {
-        return copyRepository.findById(copyId)
-                .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + copyId + " was not found."));
-    }
-
-    private Client findClientById(Long clientId) {
-        return clientRepository.findById(clientId)
-                .orElseThrow(() -> new ObjectNotFoundException("Client with id " + clientId + " was not found."));
-    }
-
-    /**
      * Return a borrowed copy for a given client.
      *
      * @param copyId   The identifier of the copy to be returned.
@@ -128,6 +113,14 @@ public class BorrowService {
         logUserActivity(client, copy, ActionType.RETURN, activeBorrow.getBorrowDate(), currentDate);
     }
 
+    /**
+     * Update the borrow and copy records when a copy is returned.
+     *
+     * @param borrow     The Borrow record being updated.
+     * @param copy       The Copy being returned.
+     * @param returnDate The date of returning the copy.
+     * @throws IllegalArgumentException if there is a mismatch in the borrow record for the given copy and client.
+     */
     private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDate returnDate) {
         borrow.setReturnDate(returnDate);
 
@@ -143,11 +136,11 @@ public class BorrowService {
     /**
      * Log user activity such as borrow or return.
      *
-     * @param client      The client involved in the activity.
-     * @param copy        The copy involved in the activity.
-     * @param actionType  The type of action (BORROW or RETURN).
-     * @param borrowDate  The date of borrowing.
-     * @param returnDate  The date of returning.
+     * @param client     The client involved in the activity.
+     * @param copy       The copy involved in the activity.
+     * @param actionType The type of action (BORROW or RETURN).
+     * @param borrowDate The date of borrowing.
+     * @param returnDate The date of returning.
      */
     @Transactional
     public void logUserActivity(Client client, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate
@@ -200,5 +193,22 @@ public class BorrowService {
                 .filter(borrow -> borrow.getReturnDate() == null)
                 .map(copy -> modelMapper.map(copy, CopyDto.class))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve a copy by its identifier.
+     *
+     * @param copyId The identifier of the copy.
+     * @return The Copy associated with the given copyId.
+     * @throws ObjectNotFoundException if the copy is not found.
+     */
+    public Copy findCopyById(Long copyId) {
+        return copyRepository.findById(copyId)
+                .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + copyId + " was not found."));
+    }
+
+    Client findClientById(Long clientId) {
+        return clientRepository.findById(clientId)
+                .orElseThrow(() -> new ObjectNotFoundException("Client with id " + clientId + " was not found."));
     }
 }

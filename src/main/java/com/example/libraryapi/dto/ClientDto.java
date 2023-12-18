@@ -24,6 +24,5 @@ public record ClientDto(
         @NotBlank(message = "Password is required.")
         String password
 
-//        UserRole role
 ) {
 }

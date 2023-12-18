@@ -167,6 +167,7 @@ public class LateFeeService {
      * @return The LateFee object associated with the given lateFeeId.
      * @throws ObjectNotFoundException if the late fee is not found.
      */
+
     private LateFee getLateFeeByIdOrThrow(final Long lateFeeId) {
         return lateFeeRepository.findById(lateFeeId)
                 .orElseThrow(() -> new ObjectNotFoundException("Late fee with id " + lateFeeId + " was not found."));

@@ -45,9 +45,6 @@ public class Client {
     @Column(nullable = false)
     private String password;
 
-//    @Enumerated(EnumType.STRING)
-//    private UserRole role;
-
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -59,7 +56,7 @@ public class Client {
     private List<Borrow> borrows = new ArrayList<>();
 
     @OneToMany(mappedBy = "client")
-    private List<ClientActivity> userActivities;
+    private List<ClientActivity> clientActivities;
 
     @OneToMany(mappedBy = "client")
     private List<Copy> copies;

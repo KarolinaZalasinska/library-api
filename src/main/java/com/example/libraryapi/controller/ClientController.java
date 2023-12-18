@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.ClientService;
 
 import java.util.List;
+import java.util.Map;
 
 @Api(value = "Client Management System", tags = {"Client"})
 @RestController
@@ -21,7 +22,7 @@ public class ClientController {
     private final ClientService service;
 
     @PostMapping
-    @ApiOperation(value = "Create new client")
+    @ApiOperation(value = "Create new client", notes = "Creates a new client based on the provided data.")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<ClientDto> createClient(
             @ApiParam(value = "Provide client data to create a new client", required = true) @RequestBody ClientDto clientDto) {
@@ -30,7 +31,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get a client by id")
+    @ApiOperation(value = "Get a client by id", notes = "Retrieves information about a client based on the provided id.")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<ClientDto> getUserById(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long id) {
@@ -39,7 +40,7 @@ public class ClientController {
     }
 
     @GetMapping
-    @ApiOperation(value = "Get all clients")
+    @ApiOperation(value = "Get all clients", notes = "Retrieves information about all clients in the system.")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientDto>> getAllClients() {
         List<ClientDto> clients = service.getAllClients();
@@ -47,17 +48,17 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "Update client by id")
+    @ApiOperation(value = "Update client by id", notes = "Updates an existing client based on the provided data.")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<ClientDto> updateClient(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long id,
-            @ApiParam(value = "Updated client data", required = true) @RequestBody ClientDto clientDto) {
-        ClientDto updatedClient = service.updateClient(id, clientDto);
-        return ResponseEntity.ok(updatedClient);
+            @ApiParam(value = "Updated client data", required = true) @RequestBody Map<String, String> fieldsToUpdate) {
+        service.updateClient(id, fieldsToUpdate);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete client by id")
+    @ApiOperation(value = "Delete client by id", notes = "Deletes a client based on the provided id.")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteClient(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long id) {

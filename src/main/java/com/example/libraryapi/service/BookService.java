@@ -12,10 +12,12 @@ import com.example.libraryapi.repository.BookRepository;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
- * Service for managing books.
+ * Service class for managing books.
  */
 @Service
 @RequiredArgsConstructor
@@ -43,9 +45,8 @@ public class BookService {
      * @throws ObjectNotFoundException if the book is not found.
      */
     public BookDto getBookById(final Long id) {
-        return repository.findById(id)
-                .map(book -> modelMapper.map(book, BookDto.class))
-                .orElseThrow(() -> new ObjectNotFoundException("Book with id " + id + " was not found."));
+        Book book = getBookOrThrow(id);
+        return modelMapper.map(book, BookDto.class);
     }
 
     /**
@@ -60,22 +61,57 @@ public class BookService {
     }
 
     /**
-     * Updates an existing book based on the provided bookDto.
+     * Updates an existing book based on the provided fields.
      *
-     * @param id      The identifier for the book to be updated.
-     * @param bookDto The BookDto containing updated information.
-     * @return The updated BookDto.
-     * @throws ObjectNotFoundException if the book is not found.
+     * @param id             The identifier for the book to be updated.
+     * @param fieldsToUpdate A Map containing fields to be updated along with their new values.
+     * @throws ObjectNotFoundException  if the book is not found.
+     * @throws IllegalArgumentException if invalid or unsupported fields are specified,
+     *                                  or if the field values fail validation.
      */
-    @Transactional
-    public BookDto updateBook(final Long id, @Valid BookDto bookDto) {
-        Book book = repository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Book with id " + id + " was not found."));
+    public void updateBook(final Long id, Map<String, String> fieldsToUpdate) {
+        if (fieldsToUpdate == null || fieldsToUpdate.isEmpty()) {
+            throw new IllegalArgumentException("Fields to update cannot be null or empty.");
+        }
 
-        modelMapper.map(bookDto, book);
-        Book updatedBook = repository.save(book);
+        Book book = getBookOrThrow(id);
 
-        return modelMapper.map(updatedBook, BookDto.class);
+        Map<String, BiConsumer<Book, String>> fieldSetters = Map.of(
+                "title", (b, val) -> {
+                    if (isValidTitle(val)) {
+                        b.setTitle(val);
+                    } else {
+                        throw new IllegalArgumentException("Invalid value for title: " + val);
+                    }
+                },
+                "isbn", (b, val) -> {
+                    if (isValidIsbn(val)) {
+                        b.setIsbn(val);
+                    } else {
+                        throw new IllegalArgumentException("Invalid value for ISBN: " + val);
+                    }
+                }
+        );
+
+        for (Map.Entry<String, String> entry : fieldsToUpdate.entrySet()) {
+            String field = entry.getKey();
+            String value = entry.getValue();
+
+            fieldSetters.getOrDefault(field, (b, val) -> {
+                throw new IllegalArgumentException("Invalid field specified: " + field);
+            }).accept(book, value);
+        }
+    }
+
+    private boolean isValidTitle(String title) {
+        return title != null && !title.trim().isEmpty();
+    }
+
+    private boolean isValidIsbn(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            return false;
+        }
+        return isbn.matches("^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$");
     }
 
     /**
@@ -87,4 +123,10 @@ public class BookService {
     public void deleteBook(final Long id) {
         repository.deleteById(id);
     }
+
+    Book getBookOrThrow(Long bookId) {
+        return repository.findById(bookId)
+                .orElseThrow(() -> new ObjectNotFoundException("Book with id " + bookId + " was not found."));
+    }
+
 }
