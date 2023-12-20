@@ -14,6 +14,7 @@ import com.example.libraryapi.repository.LateFeeRepository;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -115,7 +116,7 @@ public class LateFeeService {
      * @param returnDate         The actual return date.
      * @return The calculated late fee amount.
      */
-    private BigDecimal calculateLateFeeForReturn(LocalDate expectedReturnDate, LocalDate returnDate) {
+    private BigDecimal calculateLateFeeForReturn(LocalDateTime expectedReturnDate, LocalDateTime returnDate) {
         if (returnDate.isAfter(expectedReturnDate)) {
             long daysLate = ChronoUnit.DAYS.between(expectedReturnDate, returnDate);
             BigDecimal lateFeePerDay = BigDecimal.valueOf(5.0);

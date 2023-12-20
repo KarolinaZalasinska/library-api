@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,35 +43,32 @@ public class BorrowService {
     public void borrowCopy(Long copyId, Long clientId) {
         Copy copy = findCopyById(copyId);
         Client client = findClientById(clientId);
-        LocalDate currentDate = LocalDate.now();
 
         if (!isCopyAvailable(copy)) {
             throw new CopyNotAvailableException("The copy is not available for borrowing.", copyId);
         }
 
-        Borrow borrow = createBorrowRecord(copy, client, currentDate);
-        copy.setBorrowDate(currentDate);
+        Borrow borrow = createBorrowRecord(copy, client);
+        copy.setBorrowDate(borrow.getBorrowDate().toLocalDate());
+        copy.setExpectedReturnDate(borrow.getExpectedReturnDate().toLocalDate());
         updateCopyStatus(copy, CopyStatus.BORROWED);
         updateCopyAndSave(copy, borrow);
-        logUserActivity(client, copy, ActionType.BORROW, currentDate, null);
+        logUserActivity(client, copy, ActionType.BORROW,null);
     }
+
 
     /**
      * Create a borrow record for a given copy, client, and current date.
      *
-     * @param copy        The copy being borrowed.
-     * @param client      The client borrowing the copy.
-     * @param currentDate The current date.
+     * @param copy   The copy being borrowed.
+     * @param client The client borrowing the copy.
      * @return The created Borrow record.
      */
-    @Transactional
-    public Borrow createBorrowRecord(Copy copy, Client client, LocalDate currentDate) {
-        LocalDate expectedReturnDate = currentDate.plusDays(30);
+    public Borrow createBorrowRecord(Copy copy, Client client) {
         Borrow borrow = new Borrow();
         borrow.setCopy(copy);
         borrow.setClient(client);
-        borrow.setBorrowDate(currentDate);
-        borrow.setReturnDate(expectedReturnDate);
+        borrow.setReturnDate(null);
         return borrowRepository.save(borrow);
     }
 
@@ -93,25 +91,30 @@ public class BorrowService {
     /**
      * Return a borrowed copy for a given client.
      *
-     * @param copyId   The identifier of the copy to be returned.
-     * @param clientId The identifier of the client returning the copy.
-     * @throws ObjectNotFoundException if no active borrow record is found for the copy and client.
+     * @param borrowId   The identifier of the borrow record to be updated.
+     * @param returnDate The date the copy is returned. If null, the current date and time will be used.
+     * @throws ObjectNotFoundException if no active borrow record is found for the provided borrowId.
+     * @throws IllegalStateException   if the book has already been returned.
      */
     @Transactional
-    public void returnCopy(Long copyId, Long clientId) {
-        Copy copy = findCopyById(copyId);
-        Client client = findClientById(clientId);
-        Borrow activeBorrow = borrowRepository.findByCopyAndClientAndReturnDateIsNull(copy, client);
+    public void returnBook(Long borrowId, LocalDateTime returnDate) {
+        Borrow borrow = borrowRepository.findById(borrowId)
+                .orElseThrow(() -> new ObjectNotFoundException("Borrow with id " + borrowId + " was not found."));
 
-        if (activeBorrow == null) {
-            throw new ObjectNotFoundException("No active borrow record found for the copy and client.");
-        }
+        borrow.setReturnDate(returnDate != null ? returnDate : LocalDateTime.now());
+        borrowRepository.save(borrow);
 
-        LocalDate currentDate = LocalDate.now();
-        updateBorrowAndCopy(activeBorrow, copy, currentDate);
+        Copy copy = borrow.getCopy();
+        Client client = borrow.getClient();
+
+        updateBorrowAndCopy(borrow, copy, returnDate);
+        borrowRepository.save(borrow);
+
         updateCopyStatus(copy, CopyStatus.AVAILABLE);
-        logUserActivity(client, copy, ActionType.RETURN, activeBorrow.getBorrowDate(), currentDate);
+
+        logUserActivity(client, copy, ActionType.RETURN, returnDate);
     }
+
 
     /**
      * Update the borrow and copy records when a copy is returned.
@@ -121,11 +124,10 @@ public class BorrowService {
      * @param returnDate The date of returning the copy.
      * @throws IllegalArgumentException if there is a mismatch in the borrow record for the given copy and client.
      */
-    private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDate returnDate) {
+    private void updateBorrowAndCopy(Borrow borrow, Copy copy, LocalDateTime returnDate) {
         borrow.setReturnDate(returnDate);
 
         if (borrow.getClient().equals(copy.getClient())) {
-            copy.setExpectedReturnDate(returnDate);
             borrowRepository.save(borrow);
             copyRepository.save(copy);
         } else {
@@ -139,18 +141,16 @@ public class BorrowService {
      * @param client     The client involved in the activity.
      * @param copy       The copy involved in the activity.
      * @param actionType The type of action (BORROW or RETURN).
-     * @param borrowDate The date of borrowing.
      * @param returnDate The date of returning.
      */
     @Transactional
-    public void logUserActivity(Client client, Copy copy, ActionType actionType, LocalDate borrowDate, LocalDate
-            returnDate) {
+    public void logUserActivity(Client client, Copy copy, ActionType actionType, LocalDateTime returnDate) {
         ClientActivity clientActivity = new ClientActivity();
         clientActivity.setClient(client);
         clientActivity.setCopy(copy);
         clientActivity.setActionType(actionType);
-        clientActivity.setBorrowDate(borrowDate);
         clientActivity.setReturnDate(returnDate);
+
 
         clientActivityRepository.save(clientActivity);
     }
@@ -211,4 +211,5 @@ public class BorrowService {
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new ObjectNotFoundException("Client with id " + clientId + " was not found."));
     }
+
 }

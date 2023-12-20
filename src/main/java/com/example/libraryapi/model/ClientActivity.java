@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -25,11 +27,12 @@ public class ClientActivity {
     @Enumerated(EnumType.STRING)
     private ActionType actionType;
 
-    @PastOrPresent(message = "Borrow date must be in the past or present.")
-    private LocalDate borrowDate;
+    @CreationTimestamp
+    @Column(name = "borrow_date")
+    private LocalDateTime borrowDate;
 
     @PastOrPresent(message = "Return date must be in the past or present.")
-    private LocalDate returnDate;
+    private LocalDateTime returnDate;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
@@ -40,3 +43,4 @@ public class ClientActivity {
     private Copy copy;
 
 }
+

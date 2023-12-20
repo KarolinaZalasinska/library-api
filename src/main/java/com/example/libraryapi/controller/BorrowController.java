@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.BorrowService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Api(value = "Borrow Management System", tags = {"Borrow"})
@@ -37,11 +38,12 @@ public class BorrowController {
     @ApiOperation(value = "Return copy", notes = "Returns a borrowed copy for a given client.")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
     public ResponseEntity<Void> returnCopy(
-            @ApiParam(value = "Copy id", required = true) @RequestParam final Long copyId,
-            @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
-        service.returnCopy(copyId, clientId);
+            @ApiParam(value = "Borrow id", required = true) @RequestParam final Long borrowId,
+            @ApiParam(value = "Return date", required = true) @RequestParam final LocalDateTime returnDate) {
+        service.returnBook(borrowId, returnDate);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 
     @GetMapping("/client-history")
     @ApiOperation(value = "Get borrow history for client", notes = "Retrieves the borrow history for a specific client.")

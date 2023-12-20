@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.libraryapi.service.CopyService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Api(value = "Copy Management System", tags = {"Copy"})
@@ -50,11 +51,11 @@ public class CopyController {
     @PutMapping("/{id}")
     @ApiOperation("Update copy by id")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
-    public ResponseEntity<CopyDto> updateCopy(
+    public ResponseEntity<Void> updateCopy(
             @ApiParam(value = "Copy id", required = true) @PathVariable final Long id,
-            @ApiParam(value = "Updated copy data", required = true) @RequestBody CopyDto copyDto) {
-        CopyDto updatedCopy = service.updateCopy(id, copyDto);
-        return ResponseEntity.ok(updatedCopy);
+            @ApiParam(value = "Updated copy data", required = true) @RequestBody Map<String, String> copyUpdate) {
+        service.updateCopy(id, copyUpdate);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
@@ -73,7 +74,6 @@ public class CopyController {
         Set<CopyDto> availableCopiesNow = service.getAvailableCopiesNow();
         return ResponseEntity.ok(availableCopiesNow);
     }
-
 
     @GetMapping("/for-book")
     @ApiOperation("Get all copies for the book with the given id")
