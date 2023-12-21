@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+
 /**
  * Service class for managing copies.
  */
@@ -60,6 +61,14 @@ public class CopyService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates the fields of a Copy object based on the provided data.
+     *
+     * @param id             The identifier of the instance to be updated.
+     * @param fieldsToUpdate A map containing fields to be updated in the form of (field name, value) pairs.
+     * @throws IllegalArgumentException If fieldsToUpdate is null or empty.
+     * @throws ObjectNotFoundException  if the copy is not found.
+     */
     public void updateCopy(final Long id, Map<String, String> fieldsToUpdate) {
         if (fieldsToUpdate == null || fieldsToUpdate.isEmpty()) {
             throw new IllegalArgumentException("Fields to update cannot be null or empty.");
@@ -70,10 +79,12 @@ public class CopyService {
         Map<String, BiConsumer<Copy, String>> fieldSetters = Map.of(
                 "purchaseDate", (c, val) -> {
                     LocalDate purchaseDate = LocalDate.parse(val);
+                    validatePurchaseDate(purchaseDate);
                     c.setPurchaseDate(purchaseDate);
                 },
                 "returnDate", (c, val) -> {
                     LocalDate returnDate = LocalDate.parse(val);
+                    validateReturnDate(returnDate);
                     c.setReturnDate(returnDate);
                 }
         );
@@ -85,6 +96,18 @@ public class CopyService {
             fieldSetters.getOrDefault(field, (cl, val) -> {
                 throw new IllegalArgumentException("Invalid field specified: " + field);
             }).accept(copy, value);
+        }
+    }
+
+    private void validatePurchaseDate(LocalDate purchaseDate) {
+        if (purchaseDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Purchase date must be in the past or present.");
+        }
+    }
+
+    private void validateReturnDate(LocalDate returnDate) {
+        if (returnDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Return date must be in the past or present.");
         }
     }
 
@@ -191,3 +214,4 @@ public class CopyService {
                 .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + copyId + " was not found."));
     }
 }
+

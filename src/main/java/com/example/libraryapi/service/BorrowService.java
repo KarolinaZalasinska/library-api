@@ -49,13 +49,11 @@ public class BorrowService {
         }
 
         Borrow borrow = createBorrowRecord(copy, client);
-        copy.setBorrowDate(borrow.getBorrowDate().toLocalDate());
-        copy.setExpectedReturnDate(borrow.getExpectedReturnDate().toLocalDate());
         updateCopyStatus(copy, CopyStatus.BORROWED);
-        updateCopyAndSave(copy, borrow);
-        logUserActivity(client, copy, ActionType.BORROW,null);
+        copyRepository.save(copy);
+        borrowRepository.save(borrow);
+        logUserActivity(client, copy, ActionType.BORROW, null);
     }
-
 
     /**
      * Create a borrow record for a given copy, client, and current date.
@@ -70,11 +68,6 @@ public class BorrowService {
         borrow.setClient(client);
         borrow.setReturnDate(null);
         return borrowRepository.save(borrow);
-    }
-
-    private void updateCopyAndSave(Copy copy, Borrow borrow) {
-        borrowRepository.save(borrow);
-        copyRepository.save(copy);
     }
 
     /**
@@ -93,8 +86,8 @@ public class BorrowService {
      *
      * @param borrowId   The identifier of the borrow record to be updated.
      * @param returnDate The date the copy is returned. If null, the current date and time will be used.
-     * @throws ObjectNotFoundException if no active borrow record is found for the provided borrowId.
-     * @throws IllegalStateException   if the book has already been returned.
+     * @throws ObjectNotFoundException  if no active borrow record is found for the provided borrowId.
+     * @throws IllegalArgumentException if there is a mismatch in the borrow record for the given copy and client.
      */
     @Transactional
     public void returnBook(Long borrowId, LocalDateTime returnDate) {
@@ -102,14 +95,12 @@ public class BorrowService {
                 .orElseThrow(() -> new ObjectNotFoundException("Borrow with id " + borrowId + " was not found."));
 
         borrow.setReturnDate(returnDate != null ? returnDate : LocalDateTime.now());
-        borrowRepository.save(borrow);
 
         Copy copy = borrow.getCopy();
         Client client = borrow.getClient();
 
         updateBorrowAndCopy(borrow, copy, returnDate);
         borrowRepository.save(borrow);
-
         updateCopyStatus(copy, CopyStatus.AVAILABLE);
 
         logUserActivity(client, copy, ActionType.RETURN, returnDate);
@@ -129,7 +120,6 @@ public class BorrowService {
 
         if (borrow.getClient().equals(copy.getClient())) {
             borrowRepository.save(borrow);
-            copyRepository.save(copy);
         } else {
             throw new IllegalArgumentException("Mismatched borrow record for the given copy and client.");
         }
@@ -207,7 +197,7 @@ public class BorrowService {
                 .orElseThrow(() -> new ObjectNotFoundException("Copy with id " + copyId + " was not found."));
     }
 
-    Client findClientById(Long clientId) {
+    public Client findClientById(Long clientId) {
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new ObjectNotFoundException("Client with id " + clientId + " was not found."));
     }

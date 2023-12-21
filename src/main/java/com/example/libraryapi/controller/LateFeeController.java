@@ -12,6 +12,7 @@ import com.example.libraryapi.service.LateFeeService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Api(value = "Late fees Management System", tags = {"Late fee"})
@@ -51,11 +52,11 @@ public class LateFeeController {
     @PutMapping("/{id}")
     @ApiOperation("Update late fee by id")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
-    public ResponseEntity<LateFeeDto> updateLateFee(
+    public ResponseEntity<Void> updateLateFee(
             @ApiParam(value = "Late fee id", required = true) @PathVariable final Long id,
-            @ApiParam(value = "Update late fee data", required = true) @Valid @RequestBody LateFeeDto lateFeeDto) {
-        LateFeeDto updatedLateFee = service.updateLateFee(id, lateFeeDto);
-        return ResponseEntity.ok(updatedLateFee);
+            @ApiParam(value = "Update late fee data", required = true) @RequestBody Map<String, String> fieldsToUpdate) {
+        service.updateLateFee(id, fieldsToUpdate);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")

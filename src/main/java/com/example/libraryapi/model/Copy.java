@@ -5,10 +5,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,11 +25,17 @@ public class Copy {
     @Column(nullable = false)
     private LocalDate purchaseDate;
 
-    @PastOrPresent(message = "Borrow date must be in the past or present.")
-    private LocalDate borrowDate;
+    @CreationTimestamp
+    @Column(name = "borrow_date")
+    private LocalDateTime borrowDate;
 
-    @Future(message = "Expected return date must be in the future.")
-    private LocalDate expectedReturnDate;
+    @Column(name = "expected_return_date")
+    @CreationTimestamp
+    private LocalDateTime expectedReturnDate;
+    @PrePersist
+    public void prePersist() {
+        this.expectedReturnDate = LocalDateTime.now().plusDays(30);
+    }
 
     @PastOrPresent(message = "Return date must be in the past or present.")
     private LocalDate returnDate;
@@ -46,7 +53,14 @@ public class Copy {
     @JoinColumn(name = "client_id")
     private Client client;
 
+    @Enumerated(EnumType.STRING)
+    private CopyStatus copyStatus;
+
     public void setStatus(CopyStatus newStatus) {
+        this.copyStatus = newStatus;
     }
 
+    public CopyStatus getStatus() {
+        return copyStatus;
+    }
 }

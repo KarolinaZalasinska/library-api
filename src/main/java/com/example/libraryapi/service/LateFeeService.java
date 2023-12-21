@@ -2,6 +2,7 @@ package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.LateFeeDto;
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Borrow;
 import com.example.libraryapi.model.LateFee;
@@ -12,16 +13,19 @@ import com.example.libraryapi.repository.BorrowRepository;
 import com.example.libraryapi.repository.LateFeeRepository;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
- * Service for managing late fees.
+ * Service class for managing late fees.
  */
 @Service
 @RequiredArgsConstructor
@@ -42,10 +46,12 @@ public class LateFeeService {
         Borrow borrow = getBorrowById(lateFeeDto.id());
 
         LateFee lateFee = modelMapper.map(lateFeeDto, LateFee.class);
-        lateFee.setBorrow(borrow);
+        setBorrowForLateFee(lateFee, borrow);
 
-        LateFee createdLateFee = lateFeeRepository.save(lateFee);
-        return modelMapper.map(createdLateFee, LateFeeDto.class);
+        return modelMapper.map(lateFeeRepository.save(lateFee), LateFeeDto.class);
+    }
+    private void setBorrowForLateFee(@NonNull LateFee lateFee, @NonNull Borrow borrow) {
+        lateFee.setBorrow(borrow);
     }
 
     /**
@@ -55,7 +61,7 @@ public class LateFeeService {
      * @return The LateFeeDto associated with the given lateFeeId.
      */
     public LateFeeDto getLateFeeById(final Long lateFeeId) {
-        LateFee lateFee = getLateFeeByIdOrThrow(lateFeeId);
+        LateFee lateFee = getLateFeeOrThrow(lateFeeId);
         return modelMapper.map(lateFee, LateFeeDto.class);
     }
 
@@ -77,25 +83,61 @@ public class LateFeeService {
      * @return A List of LateFeeDto associated with the given borrowId.
      */
     public List<LateFeeDto> getLateFeesByBorrowId(final Long borrowId) {
-        return lateFeeRepository.findLateFeesByBorrow(getBorrowById(borrowId))
-                .stream()
+        Borrow borrow = borrowRepository.findById(borrowId)
+                .orElseThrow(() -> new ObjectNotFoundException("Borrow with id " + borrowId + " was not found."));
+
+        List<LateFee> lateFees = lateFeeRepository.findLateFeesByBorrow(borrow);
+        return lateFees.stream()
                 .map(lateFee -> modelMapper.map(lateFee, LateFeeDto.class))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Updates an existing late fee record based on the provided lateFeeDto.
+     * Updates an existing late fee record based on the provided fields to update.
      *
-     * @param id         The identifier for the late fee to be updated.
-     * @param lateFeeDto The LateFeeDto containing updated information.
-     * @return The updated LateFeeDto.
+     * @param id             The identifier for the late fee to be updated.
+     * @param fieldsToUpdate A map containing field names and their updated values.
      */
-    @Transactional
-    public LateFeeDto updateLateFee(final Long id, @Valid LateFeeDto lateFeeDto) {
-        LateFee lateFee = getLateFeeByIdOrThrow(id);
-        modelMapper.map(lateFeeDto, lateFee);
-        LateFee updatedLateFee = lateFeeRepository.save(lateFee);
-        return modelMapper.map(updatedLateFee, LateFeeDto.class);
+    public void updateLateFee(final Long id, Map<String, String> fieldsToUpdate) {
+        if (fieldsToUpdate == null || fieldsToUpdate.isEmpty()) {
+            throw new IllegalArgumentException("Fields to update cannot be null or empty.");
+        }
+
+        LateFee lateFee = getLateFeeOrThrow(id);
+
+        Map<String, BiConsumer<LateFee, String>> fieldSetters = Map.of(
+                "lateFeeDate", (lf, val) -> {
+                    LocalDate lateFeeDate = LocalDate.parse(val);
+                    validateLateFeeDate(lateFeeDate);
+                    lf.setLateFeeDate(lateFeeDate);
+                },
+                "amount", (lf, val) -> {
+                    BigDecimal amount = new BigDecimal(val);
+                    validateAmount(amount);
+                    lf.setAmount(amount);
+                }
+        );
+
+        for (Map.Entry<String, String> entry : fieldsToUpdate.entrySet()) {
+            String field = entry.getKey();
+            String value = entry.getValue();
+
+            fieldSetters.getOrDefault(field, (lf, val) -> {
+                throw new IllegalArgumentException("Invalid field specified: " + field);
+            }).accept(lateFee, value);
+        }
+    }
+
+    private void validateLateFeeDate(LocalDate lateFeeDate) {
+        if (lateFeeDate == null || lateFeeDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Late fee date must be in the past or present.");
+        }
+    }
+
+    private void validateAmount(BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than 0.");
+        }
     }
 
     /**
@@ -105,7 +147,7 @@ public class LateFeeService {
      */
     @Transactional
     public void deleteLateFee(Long id) {
-        LateFee lateFee = getLateFeeByIdOrThrow(id);
+        LateFee lateFee = getLateFeeOrThrow(id);
         lateFeeRepository.delete(lateFee);
     }
 
@@ -140,7 +182,7 @@ public class LateFeeService {
             LateFee lateFeeRecord = new LateFee();
             lateFeeRecord.setBorrow(borrow);
             lateFeeRecord.setAmount(lateFeeAmount);
-            lateFeeRecord.setLateFeeDate(LocalDate.now());
+            lateFeeRecord.setLateFeeDate(borrow.getReturnDate().toLocalDate());
 
             LateFee createdLateFee = lateFeeRepository.save(lateFeeRecord);
             return Optional.of(modelMapper.map(createdLateFee, LateFeeDto.class));
@@ -168,8 +210,7 @@ public class LateFeeService {
      * @return The LateFee object associated with the given lateFeeId.
      * @throws ObjectNotFoundException if the late fee is not found.
      */
-
-    private LateFee getLateFeeByIdOrThrow(final Long lateFeeId) {
+    LateFee getLateFeeOrThrow(final Long lateFeeId) {
         return lateFeeRepository.findById(lateFeeId)
                 .orElseThrow(() -> new ObjectNotFoundException("Late fee with id " + lateFeeId + " was not found."));
     }
