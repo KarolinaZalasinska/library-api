@@ -149,8 +149,8 @@ public class LibraryService {
      * @param libraryId The identifier for the library.
      * @param bookId    The identifier for the book.
      * @return The LibraryDto representing the updated library.
-     * @throws ObjectNotFoundException  If the library or book with the given IDs is not found.
-     * @throws DuplicateBookException   If the book is already present in the library.
+     * @throws ObjectNotFoundException If the library or book with the given IDs is not found.
+     * @throws DuplicateBookException  If the book is already present in the library.
      */
     @Transactional
     public LibraryDto addBookToLibrary(final Long libraryId, final Long bookId) {
@@ -169,10 +169,8 @@ public class LibraryService {
         return modelMapper.map(updatedLibrary, LibraryDto.class);
     }
 
-
     Library getLibraryOrThrow(final Long libraryId) {
         return libraryRepository.findById(libraryId)
                 .orElseThrow(() -> new ObjectNotFoundException("Library with id " + libraryId + " was not found."));
     }
-
 }

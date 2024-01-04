@@ -57,6 +57,7 @@ public class Book {
     private List<Borrow> borrows = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
     @ManyToMany

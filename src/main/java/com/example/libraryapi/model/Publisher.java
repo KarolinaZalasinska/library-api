@@ -32,6 +32,7 @@ public class Publisher {
     @Column(nullable = false)
     private String postalCode;
 
-    @OneToMany(mappedBy = "publisher")
+    @OneToMany(mappedBy = "publisher", cascade = CascadeType.REMOVE)
     private Set<Book> books = new HashSet<>();
+
 }
