@@ -124,7 +124,7 @@ public class BookService {
         repository.deleteById(id);
     }
 
-    Book getBookOrThrow(Long bookId) {
+    Book getBookOrThrow(final Long bookId) {
         return repository.findById(bookId)
                 .orElseThrow(() -> new ObjectNotFoundException("Book with id " + bookId + " was not found."));
     }

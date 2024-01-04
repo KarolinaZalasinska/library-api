@@ -2,7 +2,6 @@ package com.example.libraryapi.service;
 
 import com.example.libraryapi.dto.LateFeeDto;
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import com.example.libraryapi.model.Borrow;
 import com.example.libraryapi.model.LateFee;
@@ -40,6 +39,7 @@ public class LateFeeService {
      *
      * @param lateFeeDto The LateFeeDto containing information for the new late fee.
      * @return The created LateFeeDto.
+     * @throws IllegalArgumentException If either LateFee or Borrow is null.
      */
     @Transactional
     public LateFeeDto createLateFee(@Valid LateFeeDto lateFeeDto) {
@@ -50,9 +50,22 @@ public class LateFeeService {
 
         return modelMapper.map(lateFeeRepository.save(lateFee), LateFeeDto.class);
     }
-    private void setBorrowForLateFee(@NonNull LateFee lateFee, @NonNull Borrow borrow) {
-        lateFee.setBorrow(borrow);
+
+    /**
+     * Sets the Borrow for the LateFee, ensuring that neither is null.
+     *
+     * @param lateFee The LateFee to set the Borrow for.
+     * @param borrow  The Borrow to set for the LateFee.
+     * @throws IllegalArgumentException If either LateFee or Borrow is null.
+     */
+    private void setBorrowForLateFee(@NotNull LateFee lateFee, @NotNull Borrow borrow) {
+        if (lateFee != null && borrow != null) {
+            lateFee.setBorrow(borrow);
+        } else {
+            throw new IllegalArgumentException("LateFee and Borrow cannot be null");
+        }
     }
+
 
     /**
      * Retrieves the late fee information by lateFeeId.
@@ -154,7 +167,7 @@ public class LateFeeService {
     /**
      * Calculates the late fee amount based on the expected return date and the actual return date.
      *
-     * @param expectedReturnDate The expected return date.
+     * @param expectedReturnDate The expected return date, which is automatically set during entity creation.
      * @param returnDate         The actual return date.
      * @return The calculated late fee amount.
      */
@@ -173,7 +186,7 @@ public class LateFeeService {
      * @param borrowId The identifier for the borrow.
      * @return An Optional containing the LateFeeDto if a late fee is recorded, or empty otherwise.
      */
-    public Optional<LateFeeDto> calculateAndRecordLateFee(final Long borrowId) {
+    public Optional<LateFeeDto> tryCalculateAndRecordLateFee(final Long borrowId) {
         Borrow borrow = getBorrowById(borrowId);
 
         BigDecimal lateFeeAmount = calculateLateFeeForReturn(borrow.getExpectedReturnDate(), borrow.getReturnDate());
