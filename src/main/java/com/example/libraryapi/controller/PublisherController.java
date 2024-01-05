@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/publishers")
@@ -47,13 +48,14 @@ public class PublisherController {
         return ResponseEntity.ok(publishers);
     }
 
-    @PutMapping("/{id}")
-    @ApiOperation(value = "Update publisher by id")
+    @PatchMapping("/{id}")
+    @ApiOperation(value = "Update specified fields for a publisher with the given publisher id",
+            notes = "Updates an existing publisher based on the provided fields.")
     @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
-    public ResponseEntity<PublisherDto> updatePublisher(
+    public ResponseEntity<PublisherDto> updatePublisherFields(
             @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id,
-            @ApiParam(value = "Updated publisher data", required = true) @Valid @RequestBody PublisherDto publisherDto) {
-        PublisherDto updatedPublisher = publisherService.updatePublisher(id, publisherDto);
+            @ApiParam(value = "Fields to update", required = true) @Valid @RequestBody Map<String, String> fieldsToUpdate) {
+        PublisherDto updatedPublisher = publisherService.updatePublisher(id, fieldsToUpdate);
         return ResponseEntity.ok(updatedPublisher);
     }
 

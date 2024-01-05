@@ -67,16 +67,16 @@ public class PublisherService {
     }
 
     /**
-     * Updates an existing library based on the provided fields.
+     * Updates an existing publisher based on the provided fields.
      *
-     * @param id             The identifier for the library to be updated.
+     * @param id             The identifier for the publisher to be updated.
      * @param fieldsToUpdate A Map containing fields to be updated along with their new values.
-     * @return The updated Library.
-     * @throws ObjectNotFoundException  if the library is not found.
+     * @return The updated PublisherDto.
+     * @throws ObjectNotFoundException  if the publisher with the given ID is not found.
      * @throws IllegalArgumentException if invalid or unsupported fields are specified,
      *                                  or if the field values fail validation.
      */
-    public Publisher updatePublisher(final Long id, Map<String, String> fieldsToUpdate) {
+    public PublisherDto updatePublisher(final Long id, Map<String, String> fieldsToUpdate) {
         if (fieldsToUpdate == null || fieldsToUpdate.isEmpty()) {
             throw new IllegalArgumentException("Fields to update cannot be null or empty.");
         }
@@ -103,7 +103,9 @@ public class PublisherService {
 
         validatePublisherFields(publisher);
 
-        return publisherRepository.save(publisher);
+        Publisher updatedPublisher = publisherRepository.save(publisher);
+
+        return modelMapper.map(updatedPublisher, PublisherDto.class);
     }
 
     private void validatePublisherFields(Publisher publisher) {
