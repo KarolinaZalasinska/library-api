@@ -1,6 +1,5 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.usersRoles;
 
-import com.example.libraryapi.users.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

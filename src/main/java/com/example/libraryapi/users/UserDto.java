@@ -1,4 +1,4 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.users;
 
 import jakarta.validation.constraints.Pattern;
 

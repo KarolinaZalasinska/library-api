@@ -26,7 +26,7 @@ public class BorrowController {
 
     @PostMapping("/borrow")
     @ApiOperation(value = "Borrow copy", notes = "Borrows a copy for a given client.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> borrowCopy(
             @ApiParam(value = "Copy id", required = true) @RequestParam final Long copyId,
             @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
@@ -36,7 +36,7 @@ public class BorrowController {
 
     @PostMapping("/return")
     @ApiOperation(value = "Return copy", notes = "Returns a borrowed copy for a given client.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> returnCopy(
             @ApiParam(value = "Borrow id", required = true) @RequestParam final Long borrowId,
             @ApiParam(value = "Return date", required = true) @RequestParam final LocalDateTime returnDate) {
@@ -47,7 +47,7 @@ public class BorrowController {
 
     @GetMapping("/client-history")
     @ApiOperation(value = "Get borrow history for client", notes = "Retrieves the borrow history for a specific client.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getBorrowHistoryForUser(
             @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
         List<ClientActivityDto> borrowHistory = service.getBorrowHistoryForClient(clientId);
@@ -70,7 +70,7 @@ public class BorrowController {
 
     @GetMapping
     @ApiOperation(value = "Get current borrowed copies for client", notes = "Retrieves currently borrowed copies for a specific client.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getCurrentBorrowedCopiesForClient(
             @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
         List<CopyDto> currentBorrowedCopiesForClient = service.getCurrentBorrowedCopiesForClient(clientId);

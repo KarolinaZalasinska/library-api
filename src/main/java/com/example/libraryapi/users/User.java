@@ -1,6 +1,6 @@
 package com.example.libraryapi.users;
 
-import com.example.libraryapi.zrobione.Role;
+import com.example.libraryapi.usersRoles.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +18,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
 public class User {
 
     private int loginAttempts;
@@ -31,12 +30,19 @@ public class User {
 
     @Email(message = "Please provide a valid email address")
     @NotBlank(message = "Email is required")
+    @Column(unique = true)
+    private String email;
+
+    @Email(message = "Please provide a valid email address")
+    @NotBlank(message = "Email is required")
+    @Column(unique = true)
     private String username;
 
     @NotBlank(message = "Password is required")
     @Length(min = 6, message = "Password must be at least 6 characters long")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Password is not strong enough")
     private String password;
+
 
     private boolean enabled;
 

@@ -1,6 +1,9 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.users;
 
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
+import com.example.libraryapi.users.CustomUserDetails;
+import com.example.libraryapi.users.UserDto;
+import com.example.libraryapi.usersService.UserService;
 import io.swagger.annotations.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

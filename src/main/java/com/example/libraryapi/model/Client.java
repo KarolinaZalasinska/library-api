@@ -10,7 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +35,6 @@ public class Client {
     @NotBlank(message = "Email is required.")
     @Column(nullable = false, unique = true)
     private String email;
-
-    @Pattern(
-            regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{10,}$",
-            message = "Password must be at least 10 characters long, including at least one uppercase letter, one digit, and one special character [@#$%^&+=!]."
-    )
-    @NotBlank(message = "Password is required.")
-    @Column(nullable = false)
-    private String password;
 
     @CreationTimestamp
     @Column(updatable = false)

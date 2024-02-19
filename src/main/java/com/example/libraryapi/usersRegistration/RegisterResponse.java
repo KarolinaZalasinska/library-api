@@ -1,4 +1,4 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.usersRegistration;
 
 import lombok.Getter;
 

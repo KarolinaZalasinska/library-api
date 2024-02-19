@@ -26,7 +26,7 @@ public class ClientActivityController {
 
     @GetMapping("/history/{clientId}/borrow")
     @ApiOperation(value = "Show borrow history by client id")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getClientBorrowHistory(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
         List<ClientActivityDto> borrowHistory = clientActivityService.getClientActivityHistory(clientId, ActionType.BORROW);
@@ -35,7 +35,7 @@ public class ClientActivityController {
 
     @GetMapping("/history/{clientId}/return")
     @ApiOperation(value = "Show return history by client id")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<ClientActivityDto>> getClientReturnHistory(
             @ApiParam(value = "Client id", required = true) @PathVariable final Long clientId) {
         List<ClientActivityDto> returnHistory = clientActivityService.getClientActivityHistory(clientId, ActionType.RETURN);

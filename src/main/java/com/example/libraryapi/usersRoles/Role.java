@@ -1,7 +1,6 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.usersRoles;
 
 import com.example.libraryapi.users.User;
-import com.example.libraryapi.users.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 

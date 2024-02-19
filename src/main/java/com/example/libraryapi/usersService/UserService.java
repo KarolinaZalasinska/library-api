@@ -1,8 +1,8 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.usersService;
 
 import com.example.libraryapi.exceptions.IncorrectPasswordException;
 import com.example.libraryapi.exceptions.ObjectNotFoundException;
-import com.example.libraryapi.users.User;
+import com.example.libraryapi.users.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,8 +22,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private PasswordResetService passwordResetService;
     private final ModelMapper mapper;
-
 
     private static final int MAX_LOGIN_ATTEMPTS = 3;
 
@@ -56,9 +56,7 @@ public class UserService {
             user.setUsername(userDto.newUsername());
         }
 
-        if (userDto.newPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userDto.newPassword()));
-        }
+        // e-mail
 
         if (userDto.enabled()) {
             user.setEnabled(true);
@@ -98,8 +96,32 @@ public class UserService {
             throw new IncorrectPasswordException("Incorrect old password");
         }
 
+        // Dodatkowa weryfikacja poprzedniego hasła
+        if (!isPreviousPasswordCorrect(user, oldPassword)) {
+            throw new IncorrectPasswordException("Incorrect old password");
+        }
+
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    private boolean isPreviousPasswordCorrect(User user, String oldPassword) {
+        // Tutaj możesz zaimplementować dodatkową logikę weryfikacji poprzedniego hasła,
+        // na przykład, jeśli chcesz przechowywać historię haseł użytkownika.
+        // W tej implementacji zakładam, że użytkownik musi podać dokładnie poprzednie hasło.
+        return passwordEncoder.matches(oldPassword, user.getPassword());
+    }
+
+    public void initiatePasswordReset(String username) throws javax.mail.MessagingException {
+        // Wyszukanie użytkownika w bazie danych na podstawie nazwy użytkownika
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        // Generowanie kodu weryfikacyjnego
+        String verificationCode = passwordResetService.generateVerificationCode();
+
+        // Wysłanie kodu weryfikacyjnego na adres e-mail użytkownika
+       // passwordResetService.sendVerificationCode(user.getEmail(), verificationCode, user);
     }
 
     // Metody związane z obsługą logowania
@@ -142,5 +164,5 @@ public class UserService {
     /*
     metoda loadUserDetailsByUsername jest odpowiedzialna za wczytywanie informacji o użytkowniku na podstawie nazwy użytkownika i tworzenie
     obiektu CustomUserDetails, który implementuje interfejs UserDetails. Ta klasa dostarcza informacje potrzebne do uwierzytelniania
-    użytkownika, takie jak hasło, role, czy konto jest aktywne, itp.
+    użytkownika, takie jak hasło, role, czy konto jest aktywne, itd
     */

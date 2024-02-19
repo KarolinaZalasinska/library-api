@@ -1,4 +1,4 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.usersService;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

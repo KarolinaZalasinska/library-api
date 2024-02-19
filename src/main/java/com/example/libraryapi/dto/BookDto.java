@@ -23,4 +23,5 @@ public record BookDto(
         Set<Long> libraryIds
 
 ) {
+
 }

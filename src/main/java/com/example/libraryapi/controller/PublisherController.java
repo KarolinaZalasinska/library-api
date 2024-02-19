@@ -15,16 +15,17 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/publishers")
-@RequiredArgsConstructor
 @Api(tags = "Publisher Management System", value = "{Publisher}")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/publishers")
 public class PublisherController {
     private final PublisherService publisherService;
 
     @PostMapping
-    @ApiOperation(value = "Create new publisher")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Create new publisher",
+            notes = "Creates a new publisher based on the provided publisher details.")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<PublisherDto> createPublisher(
             @ApiParam(value = "Publisher details", required = true) @Valid @RequestBody PublisherDto publisherDto) {
         PublisherDto createdPublisher = publisherService.createPublisher(publisherDto);
@@ -32,8 +33,9 @@ public class PublisherController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get publisher by id")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Get publisher by id",
+            notes = "Retrieves information about a publisher based on the provided publisher id.")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<PublisherDto> getPublisherById(
             @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id) {
         PublisherDto publisherDto = publisherService.getPublisherById(id);
@@ -41,8 +43,9 @@ public class PublisherController {
     }
 
     @GetMapping
-    @ApiOperation(value = "Get all publishers")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Get all publishers",
+            notes = "Retrieves information about all publishers in the system.")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<PublisherDto>> getAllPublishers() {
         List<PublisherDto> publishers = publisherService.getAllPublishers();
         return ResponseEntity.ok(publishers);
@@ -51,7 +54,7 @@ public class PublisherController {
     @PatchMapping("/{id}")
     @ApiOperation(value = "Update specified fields for a publisher with the given publisher id",
             notes = "Updates an existing publisher based on the provided fields.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<PublisherDto> updatePublisherFields(
             @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Fields to update", required = true) @Valid @RequestBody Map<String, String> fieldsToUpdate) {
@@ -60,8 +63,9 @@ public class PublisherController {
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Delete publisher by id")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Delete publisher by id",
+            notes = "Deletes a publisher based on the provided publisher id.")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deletePublisher(
             @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id) {
         publisherService.deletePublisher(id);
@@ -69,8 +73,9 @@ public class PublisherController {
     }
 
     @GetMapping("/{id}/books")
-    @ApiOperation(value = "Get books by publisher id")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @ApiOperation(value = "Get books by publisher id",
+            notes = "Retrieves information about books associated with the provided publisher id.")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<BookDto>> getBooksByPublisher(
             @ApiParam(value = "Publisher id", required = true) @PathVariable final Long id) {
         List<BookDto> books = publisherService.getBooksByPublisher(id);

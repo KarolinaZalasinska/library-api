@@ -96,13 +96,6 @@ public class ClientService {
                     } else {
                         throw new IllegalArgumentException("Invalid value for email address: " + val);
                     }
-                },
-                "password", (cli, val) -> {
-                    if (isValidPassword(val)) {
-                        cli.setPassword(val);
-                    } else {
-                        throw new IllegalArgumentException("Invalid value for password: " + val);
-                    }
                 }
         );
 
@@ -123,11 +116,6 @@ public class ClientService {
     private boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
-    }
-
-    private boolean isValidPassword(String password) {
-        String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{10,}$";
-        return password.matches(passwordRegex);
     }
 
     /**

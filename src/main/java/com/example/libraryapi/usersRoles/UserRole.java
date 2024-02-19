@@ -1,4 +1,4 @@
-package com.example.libraryapi.users;
+package com.example.libraryapi.usersRoles;
 
 public enum UserRole {
     USER,

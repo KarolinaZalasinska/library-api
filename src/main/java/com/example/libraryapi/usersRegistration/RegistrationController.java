@@ -1,6 +1,6 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.usersRegistration;
 
-import com.example.libraryapi.users.UserRole;
+import com.example.libraryapi.usersRoles.UserRole;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -17,7 +17,7 @@ public class RegistrationController {
 
     private final RegistrationService registrationService;
 
-    @ApiOperation(value = "Register a new user")
+    @ApiOperation(value = "Register new user")
     @PostMapping
     public ResponseEntity<RegisterResponse> registerUser(
             @ApiParam(value = "Username", required = true) @RequestParam String username,

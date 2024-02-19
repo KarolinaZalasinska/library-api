@@ -25,7 +25,7 @@ public class BookController {
 
     @PostMapping
     @ApiOperation(value = "Create new book", notes = "Creates a new book based on the provided book data.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<BookDto> createBook(
             @ApiParam(value = "Book data", required = true) @Valid @RequestBody BookDto bookDto) {
         BookDto createdBook = bookService.createBook(bookDto);
@@ -51,7 +51,7 @@ public class BookController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "Update book by id", notes = "Updates an existing book based on the provided fields.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> updateBook(
             @ApiParam(value = "Book id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Fields to be updated along with their new values", required = true)
@@ -62,7 +62,7 @@ public class BookController {
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete book by id", notes = "Deletes a book based on the provided book id.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteBook(
             @ApiParam(value = "Book id", required = true) @PathVariable final Long id) {
         bookService.deleteBook(id);

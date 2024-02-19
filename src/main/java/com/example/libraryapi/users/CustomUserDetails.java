@@ -1,4 +1,4 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.users;
 
 import com.example.libraryapi.users.User;
 import org.springframework.security.core.GrantedAuthority;

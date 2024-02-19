@@ -24,7 +24,7 @@ public class CopyController {
 
     @PostMapping
     @ApiOperation("Create new copy")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<CopyDto> createCopy(
             @ApiParam(value = "Provide copy data to create a new copy", required = true) @RequestBody CopyDto copyDto) {
         CopyDto createdCopy = service.createCopy(copyDto);
@@ -50,7 +50,7 @@ public class CopyController {
 
     @PutMapping("/{id}")
     @ApiOperation("Update copy by id")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> updateCopy(
             @ApiParam(value = "Copy id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Updated copy data", required = true) @RequestBody Map<String, String> copyUpdate) {
@@ -60,7 +60,7 @@ public class CopyController {
 
     @DeleteMapping("/{id}")
     @ApiOperation("Delete copy by id")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteCopy(
             @ApiParam(value = "Copy id", required = true) @PathVariable final Long id) {
         service.deleteCopy(id);
@@ -78,8 +78,8 @@ public class CopyController {
     @GetMapping("/for-book")
     @ApiOperation("Get all copies for the book with the given id")
     @PreAuthorize("isAuthenticated() and " +
-            "(hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name()) or " +
-            "hasAuthority(T(com.example.libraryapi.users.UserRole).USER.name()))")
+            "(hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name()) or " +
+            "hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).USER.name()))")
     public ResponseEntity<List<CopyDto>> getCopiesForBook(
             @ApiParam(value = "Book id", required = true) @RequestParam final Long bookId) {
         List<CopyDto> copiesForBook = service.getCopiesForBook(bookId);
@@ -97,7 +97,7 @@ public class CopyController {
 
     @GetMapping("/borrowed-for-client")
     @ApiOperation("Get borrowed copies for a specific client")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getBorrowedCopiesForClient(
             @ApiParam(value = "Client id", required = true) @RequestParam final Long clientId) {
         List<CopyDto> borrowedCopiesForClient = service.getBorrowedCopiesForClient(clientId);
@@ -106,7 +106,7 @@ public class CopyController {
 
     @GetMapping("/overdue")
     @ApiOperation("Get overdue copies")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getOverdueCopies() {
         List<CopyDto> overdueCopies = service.getOverdueCopies();
         return ResponseEntity.ok(overdueCopies);
@@ -115,8 +115,8 @@ public class CopyController {
     @GetMapping("/details/{id}")
     @ApiOperation("Get copy details by id")
     @PreAuthorize("isAuthenticated() and " +
-            "(hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name()) or " +
-            "hasAuthority(T(com.example.libraryapi.users.UserRole).USER.name()))")
+            "(hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name()) or " +
+            "hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).USER.name()))")
     public ResponseEntity<CopyDto> getCopyDetails(
             @ApiParam(value = "Copy id", required = true) @PathVariable final Long id) {
         CopyDto copyDetails = service.getCopyDetails(id);
@@ -125,7 +125,7 @@ public class CopyController {
 
     @GetMapping("/currently-borrowed")
     @ApiOperation("Get currently borrowed copies")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<List<CopyDto>> getCurrentlyBorrowedCopies() {
         List<CopyDto> currentlyBorrowedCopies = service.getCurrentlyBorrowedCopies();
         return ResponseEntity.ok(currentlyBorrowedCopies);

@@ -28,7 +28,7 @@ public class LibraryController {
 
     @PostMapping
     @ApiOperation(value = "Create new library", notes = "Creates a new library based on the provided library data.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<LibraryDto> createLibrary(
             @ApiParam(value = "Provide library data to create a new library", required = true) @Valid @RequestBody LibraryDto libraryDto) {
         LibraryDto createdLibrary = service.createLibrary(libraryDto);
@@ -37,7 +37,7 @@ public class LibraryController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Get a library by id", notes = "Retrieves library information based on the provided library id.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<LibraryDto> getLibraryById(
             @ApiParam(value = "Library id", required = true) @PathVariable final Long id) {
         LibraryDto libraryDto = service.getLibraryById(id);
@@ -55,7 +55,7 @@ public class LibraryController {
     @PatchMapping("/{id}")
     @ApiOperation(value = "Update specified fields for a library with the given library id",
             notes = "Updates an existing library based on the provided fields.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Library> updateLibraryFields(
             @ApiParam(value = "Library id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Fields to update", required = true) @Valid @RequestBody Map<String, String> fieldsToUpdate) {
@@ -65,7 +65,7 @@ public class LibraryController {
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete library by id", notes = "Deletes a library based on the provided library id.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteLibrary(
             @ApiParam(value = "Library id", required = true) @PathVariable final Long id) {
         service.deleteLibrary(id);
@@ -76,8 +76,8 @@ public class LibraryController {
     @ApiOperation(value = "Get books in a library by id",
             notes = "Retrieves information about books in a library based on the provided library id.")
     @PreAuthorize("isAuthenticated() and " +
-            "(hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name()) or " +
-            "hasAuthority(T(com.example.libraryapi.users.UserRole).USER.name()))")
+            "(hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name()) or " +
+            "hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).USER.name()))")
     public ResponseEntity<Set<BookDto>> getBooksInLibrary(
             @ApiParam(value = "Library id", required = true) @PathVariable final Long id) {
         Set<BookDto> books = service.getBooksInLibrary(id);
@@ -87,7 +87,7 @@ public class LibraryController {
     @PostMapping("/{libraryId}/books/{bookId}")
     @ApiOperation(value = "Add book to library by id",
             notes = "Adds a book to a library based on the provided library id and book id.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<LibraryDto> addBookToLibrary(
             @ApiParam(value = "Library id", required = true) @PathVariable final Long libraryId,
             @ApiParam(value = "Book id", required = true) @PathVariable final Long bookId) {

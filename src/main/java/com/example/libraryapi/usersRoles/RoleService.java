@@ -1,7 +1,9 @@
-package com.example.libraryapi.zrobione;
+package com.example.libraryapi.usersRoles;
 
 import com.example.libraryapi.exceptions.RoleNotFoundException;
-import com.example.libraryapi.users.UserRole;
+import com.example.libraryapi.usersRoles.UserRole;
+import com.example.libraryapi.usersRoles.Role;
+import com.example.libraryapi.usersRoles.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

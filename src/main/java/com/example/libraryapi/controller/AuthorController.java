@@ -24,7 +24,7 @@ public class AuthorController {
 
     @PostMapping
     @ApiOperation(value = "Create new author", notes = "Creates a new author with the provided data.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<AuthorDto> createAuthor(
             @ApiParam(value = "Author data", required = true) @Valid @RequestBody AuthorDto authorDto) {
         AuthorDto createdAuthor = authorService.createAuthor(authorDto);
@@ -50,7 +50,7 @@ public class AuthorController {
 
     @PatchMapping("/{id}")
     @ApiOperation(value = "Update author by id", notes = "Partially updates author information based on the provided fields.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> updateAuthor(
             @ApiParam(value = "Author id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Fields to be updated along with their new values", required = true)
@@ -61,7 +61,7 @@ public class AuthorController {
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete author by id", notes = "Deletes the author with the provided id.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteAuthor(
             @ApiParam(value = "Author id", required = true) @PathVariable final Long id) {
         authorService.deleteAuthor(id);
@@ -70,7 +70,7 @@ public class AuthorController {
 
     @PostMapping("/{authorId}/books/{bookId}")
     @ApiOperation(value = "Add a book to an author", notes = "Associates a book with an existing author.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<AuthorDto> addBookToAuthor(
             @ApiParam(value = "Author id", required = true) @PathVariable Long authorId,
             @ApiParam(value = "Book id", required = true) @PathVariable Long bookId) {

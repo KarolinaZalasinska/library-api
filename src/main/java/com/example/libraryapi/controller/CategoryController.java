@@ -23,7 +23,7 @@ public class CategoryController {
 
     @PostMapping
     @ApiOperation(value = "Create new category", notes = "Creates a new category based on the provided CategoryDto.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<CategoryDto> createCategory(
             @ApiParam(value = "Provide category data to create a new category", required = true) @RequestBody CategoryDto categoryDto) {
         CategoryDto createdCategory = service.createCategory(categoryDto);
@@ -49,7 +49,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     @ApiOperation(value = "Update category by id", notes = "Updates an existing category based on the provided fields.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<CategoryDto> updateCategory(
             @ApiParam(value = "Category id", required = true) @PathVariable final Long id,
             @ApiParam(value = "Update category data", required = true) @RequestBody Map<String, String> fieldsToUpdate) {
@@ -59,7 +59,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @ApiOperation(value = "Delete a category by id", notes = "Deletes a category based on the provided category id.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<Void> deleteCategory(
             @ApiParam(value = "Category id", required = true) @PathVariable final Long id) {
         service.deleteCategory(id);
@@ -68,7 +68,7 @@ public class CategoryController {
 
     @PostMapping("/{categoryId}/add-book/{bookId}")
     @ApiOperation(value = "Add book to category", notes = "Adds a book to the specified category.")
-    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.users.UserRole).ADMIN.name())")
+    @PreAuthorize("isFullyAuthenticated() and hasAuthority(T(com.example.libraryapi.usersRoles.UserRole).ADMIN.name())")
     public ResponseEntity<CategoryDto> addBookToCategory(
             @ApiParam(value = "Category id", required = true) @PathVariable final Long categoryId,
             @ApiParam(value = "Book id", required = true) @PathVariable final Long bookId) {
